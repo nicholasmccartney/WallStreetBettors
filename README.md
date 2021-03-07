@@ -14,5 +14,6 @@ This file will be used to locally store the API keys so they won't be public on 
 * SECRET_API_KEY= whatever the secret API key for the alpaca API you are using
 
 ### Command to display paper trading account info
+* cd into server directory
 * node index.js
 
