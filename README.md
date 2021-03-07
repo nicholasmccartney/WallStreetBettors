@@ -1,7 +1,7 @@
 # How to Properly install and run
 ## Pull repo
 
-### React CLient setup
+### React Client setup
 * cd into client directory
 * run the command: npm install
 
