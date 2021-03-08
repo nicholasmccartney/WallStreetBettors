@@ -1,14 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Homepage from './pages/Homepage/Homepage'
+import Account from './pages/Account/Account'
 import './App.css';
 
 import Topbar from './components/TopBar/Topbar.js'
-
-
-function pageMap() {
-    return "test"
-  }
 
 class App extends React.Component {
 
@@ -25,6 +21,9 @@ class App extends React.Component {
         </div>
 
         <Switch>
+          <Route path='/account'>
+            <Account/>
+          </Route>
           <Route path='/'>
             <Homepage/>
           </Route>
