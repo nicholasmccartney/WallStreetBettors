@@ -1,19 +1,24 @@
-# How to Properly install and run
-## Pull repo
+# How to Use:
+## Client
+* cd client
+* npm install
 
-### React Client setup
-* cd into client directory
-* run the command: npm install
+### Run client:
+* cd client
+* npm start
 
-### Alpaca API setup
-Go to the 'server' folder and create a new file called: '.env' without the single quotes
 
-This file will be used to locally store the API keys so they won't be public on GitHub commits. Inside of the .env folder you created you will write:
+## Server
+* cd server
+* npm init --y
+* npm install express
+* npm install axios
+* npm install date-fns --save
 
-* API_KEY= whatever the API key is for the alpaca API you are using
-* SECRET_API_KEY= whatever the secret API key for the alpaca API you are using
-
-### Command to display paper trading account info
-* cd into server directory
-* node index.js
-
+### To run API:
+* cd server
+* Create a file called: .env 
+  * Inside the folder you should have two variables:
+    * API_KEY=
+    *SECRET_API_KEY=
+* Ask Mahdi or Nick if these are needed
