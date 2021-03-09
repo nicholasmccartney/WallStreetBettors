@@ -20,5 +20,5 @@
 * Create a file called: .env 
   * Inside the folder you should have two variables:
     * API_KEY=
-    *SECRET_API_KEY=
+    * SECRET_API_KEY=
 * Ask Mahdi or Nick if these are needed
