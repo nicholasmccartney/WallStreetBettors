@@ -21,20 +21,28 @@
 
 .marketStatus-open {
     display: flex;
+    flex-direction: column;
     background-color: green;
     border-radius: 3px 3px 3px 3px;
     margin-top: 2px;
-    height: 25px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    height: auto;
     align-items: center;
     justify-content: center;
+    color: white;
 }
 
 .marketStatus-closed {
     display: flex;
+    flex-direction: column;
     background-color: red;
     border-radius: 3px 3px 3px 3px;
     margin-top: 2px;
-    height: 25px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    height: auto;
     align-items: center;
     justify-content: center;
+    color: white;
 }

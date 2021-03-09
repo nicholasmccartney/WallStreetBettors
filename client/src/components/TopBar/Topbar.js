@@ -8,56 +8,70 @@ import {
   checkWhenOpenedToday,
   printAccountInfo,
 } from "../../../src/api/api.js";
+import Timer from "../Timer/Timer.js";
 
 class Topbar extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
-    }
+      loading: true
+    };
   }
 
   setFetchedData = (data) => {
-    this.setState(data)
-  }
+    this.setState(data);
+    this.setState({ loading: false });
+  };
 
   marketStatus = () => {
     if (this.state.is_open) {
-      return "The market is open."
+      return "Market Open";
     } else {
-      return `The market is closed and will open at ${this.state.next_open}.`
+      return "Market Closed";
     }
-  }
+  };
 
   componentDidMount() {
-    checkIfOpen(this.setFetchedData)
+    checkIfOpen(this.setFetchedData);
   }
 
   render() {
-    console.log(this.state)
-    return (
-      <div>
-        <div class="container">
+    if (this.state.loading === false) {
+      return (
+        <div>
+          <div className="container">
             <Link to="/">
               <img src={logo} alt="logo" height="50" width="75"></img>
             </Link>
-          <div class="links">
-            <p class="link">Link One</p>
-            <p class="link">Link Two</p>
-            <p class="link">Link Three</p>
+            <div className="links">
+              <p className="link">Link One</p>
+              <p className="link">Link Two</p>
+              <p className="link">Link Three</p>
+            </div>
+            <Link className="account-link" to="/account">
+              <img src={avatar} alt="avatar" height="45" width="45"></img>
+              <p>Account</p>
+            </Link>
           </div>
-          <Link class="account-link" to="/account">
-            <img src={avatar} alt="avatar" height="45" width="45"></img>
-            <p>Account</p>
-          </Link>
+          <div
+            className={
+              this.state.is_open ? "marketStatus-open" : "marketStatus-closed"
+            }
+          >
+            {this.marketStatus()}
+            <Timer
+              compareDate={
+                this.state.is_open ? this.state.next_close : this.state.next_open
+              }
+            />
+          </div>
         </div>
-        <div class={this.state.is_open ? "marketStatus-open" : "marketStatus-closed"}>
-          
-          {this.marketStatus()}
-
-        </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        null
+      )
+    }
   }
 }
 
