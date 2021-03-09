@@ -5,12 +5,10 @@ const today = new Date();
 const Alpaca = require("@alpacahq/alpaca-trade-api");
 //const app = express();
 
-require("dotenv").config();
-
 //setting constants for alpaca to use down below if needed
 const alpaca = new Alpaca({
-  keyId: "AKBEZOXNBF3AM560AA2G",
-  secretKey: "M9fx3FNwyHclSWcrcZudKHMgp6Gc8FiYTUspF5Pg",
+  keyId: process.env.REACT_APP_API_KEY,
+  secretKey: process.env.REACT_APP_SECRET_API_KEY,
   paper: true,
   usePolygon: false,
 });
