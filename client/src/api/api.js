@@ -1,18 +1,13 @@
-const express = require("express");
+//const express = require("express");
 const dateFns = require('date-fns');
 const format = `yyyy-MM-dd HH:mm:ss`;
 const today = new Date();
 const Alpaca = require("@alpacahq/alpaca-trade-api");
-const app = express();
+//const app = express();
+
+require("dotenv").config();
 
 //setting constants for alpaca to use down below if needed
-const alpaca = new Alpaca({
-  keyId: process.env.API_KEY,
-  secretKey: process.env.SECRET_API_KEY,
-  paper: true,
-  usePolygon: false
-});
-
 
 //Documentation on API and available variables you can get
 //https://alpaca.markets/docs/api-documentation/api-v2/market-data/alpaca-data-api-v2/historical/ 
@@ -36,35 +31,32 @@ var config = {
 };
 
 //axios is used to ge the data and then print it properly
-axios(config)
-  .then(function (response) {
-    console.log(JSON.stringify(response.data, null, 4));
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+//axios(config)
+//  .then(function (response) {
+//    console.log(JSON.stringify(response.data, null, 4));
+//  })
+//  .catch(function (error) {
+//    console.log(error);
+//  });
 
 
 
 //function to check if market is open or closed
-async function checkIfOpen(){
+async function checkIfOpen(callback) {
+  var status;
   alpaca 
     .getClock()
     .then((clock) => {
-      if(clock.is_open == false){
-        console.log(`The Market is closed.`);
-      }else{
-        console.log(`'The Market is open.`);
-      }
-      
-  });
+      //console.log(clock)
+      callback(clock);
+    })
 }
 //checkIfOpen();
 
 
 
 //function to check when the market will open on your calendar day
-async function checkWhenOpenedToday(){
+function checkWhenOpenedToday(){
   const date = dateFns.format(today, format)
   alpaca.getCalendar({
     start: date,
@@ -79,8 +71,11 @@ async function checkWhenOpenedToday(){
 
 
 //function to print user account info
-async function printAccountInfo() {
-  const account = await alpaca.getAccount();
+function printAccountInfo() {
+  const account = alpaca.getAccount();
   console.log(account);
 }
 //printAccountInfo();
+
+
+export { checkIfOpen, checkWhenOpenedToday, printAccountInfo };
