@@ -5,6 +5,8 @@ const today = new Date();
 const Alpaca = require("@alpacahq/alpaca-trade-api");
 //const app = express();
 
+require("dotenv").config();
+
 //setting constants for alpaca to use down below if needed
 const alpaca = new Alpaca({
   keyId: process.env.REACT_APP_API_KEY,
@@ -12,6 +14,8 @@ const alpaca = new Alpaca({
   paper: true,
   usePolygon: false,
 });
+
+//getTickerData("GME")
 
 //Documentation on API and available variables you can get
 //https://alpaca.markets/docs/api-documentation/api-v2/market-data/alpaca-data-api-v2/historical/ 
@@ -79,5 +83,26 @@ function printAccountInfo() {
 }
 //printAccountInfo();
 
+function getTickerData(ticker) {
+  // return in this format -> [TimeStamp,O,H,L,C]
+  var eDate = new Date(); // today
+  var sDate = new Date();
+  sDate.setFullYear(sDate.getFullYear() - 1);
+  var formattedData = []
+  alpaca
+    .getBars("1Min", ticker, {
+      start: sDate,
+      end: eDate,
+    })
+    .then((res) => {
+      //console.log(res[ticker]);
+      res[ticker].map((candle) => {
+        formattedData.push([candle["startEpochTime"], candle['openPrice'], candle['highPrice'], candle['lowPrice'], candle['closePrice']]);
+      })
+      console.log(formattedData)
+    }
+  );
+}
 
-export { checkIfOpen, checkWhenOpenedToday, printAccountInfo };
+
+export { checkIfOpen, checkWhenOpenedToday, printAccountInfo, getTickerData };

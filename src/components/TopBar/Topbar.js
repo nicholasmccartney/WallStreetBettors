@@ -1,20 +1,23 @@
 import React from 'react'
 import './topbar.css'
-import logo from './ez_trade_logo.png'
-import avatar from './default_avatar.png'
+import logo from "../../assets/ez_trade_logo.png"
+import avatar from "../../assets/default_avatar.png";
 import { Link } from "react-router-dom";
 import {
   checkIfOpen,
   checkWhenOpenedToday,
   printAccountInfo,
-} from "../../../src/api/api.js";
+} from "../../api/api.js";
 import Timer from "../Timer/Timer.js";
+import AccountLink from "../AccountLink/AccountLink.js";
 
 class Topbar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true
+      loading: false,
+      loggedIn: false,
+      user: null
     };
   }
 
@@ -31,8 +34,16 @@ class Topbar extends React.Component {
     }
   };
 
-  componentDidMount() {
+  getMarketStatus = () => {
     checkIfOpen(this.setFetchedData);
+    //this.setFetchedData({
+    //  is_open: false,
+    //  next_open: new Date("2021-03-09T20:30:00-05:00"),
+    //});
+  }
+
+  componentDidMount() {
+    this.getMarketStatus()
   }
 
   render() {
@@ -44,14 +55,13 @@ class Topbar extends React.Component {
               <img src={logo} alt="logo" height="50" width="75"></img>
             </Link>
             <div className="links">
-              <p className="link">Link One</p>
+              <Link to="/strategies">
+                <p className="link">Link One</p>
+              </Link>
               <p className="link">Link Two</p>
               <p className="link">Link Three</p>
             </div>
-            <Link className="account-link" to="/account">
-              <img src={avatar} alt="avatar" height="45" width="45"></img>
-              <p>Account</p>
-            </Link>
+            <AccountLink user={this.state.user} />
           </div>
           <div
             className={
@@ -61,8 +71,11 @@ class Topbar extends React.Component {
             {this.marketStatus()}
             <Timer
               compareDate={
-                this.state.is_open ? this.state.next_close : this.state.next_open
+                this.state.is_open
+                  ? this.state.next_close
+                  : this.state.next_open
               }
+              resetTimer={this.getMarketStatus}
             />
           </div>
         </div>
