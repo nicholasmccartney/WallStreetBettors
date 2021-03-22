@@ -37,15 +37,22 @@ app.get('/ticker/:id', (req, res) => {
         limit: 100
       })
       .then((data) => {
+        console.log(data)
+        //data[ticker].map((candle) => {
+        //  formattedData.push([
+        //    new Date(candle["startEpochTime"] * 1000).toLocaleString(),
+        //    candle["openPrice"],
+        //    candle["highPrice"],
+        //    candle["lowPrice"],
+        //    candle["closePrice"],
+        //  ]);
+        //});
         data[ticker].map((candle) => {
-          formattedData.push([
-            candle["startEpochTime"],
-            candle["openPrice"],
-            candle["highPrice"],
-            candle["lowPrice"],
-            candle["closePrice"],
-          ]);
-        });
+          formattedData.push({
+            x: new Date(candle["startEpochTime"] * 1000).toLocaleString(),
+            y: [candle["openPrice"], candle["highPrice"], candle["lowPrice"], candle["closePrice"]]
+          })
+        })
         console.log(formattedData)
         res.json(formattedData)
       });

@@ -36,10 +36,6 @@ class Topbar extends React.Component {
 
   getMarketStatus = () => {
     checkIfOpen(this.setFetchedData);
-    //this.setFetchedData({
-    //  is_open: false,
-    //  next_open: new Date("2021-03-09T20:30:00-05:00"),
-    //});
   }
 
   componentDidMount() {
@@ -54,14 +50,7 @@ class Topbar extends React.Component {
             <Link to="/">
               <img src={logo} alt="logo" height="50" width="75"></img>
             </Link>
-            <div className="links">
-              <Link to="/strategies">
-                <p className="link">Link One</p>
-              </Link>
-              <p className="link">Link Two</p>
-              <p className="link">Link Three</p>
-            </div>
-            <AccountLink user={this.state.user} />
+            
           </div>
           <div
             className={

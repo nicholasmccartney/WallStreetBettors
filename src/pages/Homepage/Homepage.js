@@ -49,6 +49,7 @@ class Homepage extends React.Component {
     return (
       <div className="App-header">
         <Search onSubmit={this.handleSubmit}/>
+        <br/>
         {this.state.data !== null && 
         <Chart
           options={options}
