@@ -1,9 +1,10 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var cors = require('cors')
-const axios = require("axios");
-
+var express = require("express");
+var bodyParser = require("body-parser");
+var cors = require("cors");
 var app = express();
+
+const url = require("url");
+const querystring = require("querystring");
 const Alpaca = require("@alpacahq/alpaca-trade-api");
 
 require("dotenv").config();
@@ -16,48 +17,42 @@ const alpaca = new Alpaca({
   usePolygon: false,
 });
 
-app.use(cors())
-//app.use(bodyParser.urlencoded({extended: false}));
+app.use(cors());
 
+app.get("/ticker/:id", (req, res) => {
+  let parsedUrl = url.parse(req.originalUrl);
+  let parsedQs = querystring.parse(parsedUrl.query);
+  console.log(parsedUrl);
+  console.log(parsedQs);
+  var ticker = req.params.id;
+  var limit = parsedQs.limit ? parsedQs.limit : "5Min"
+  var eDate = new Date(); // today
+  var sDate = new Date();
+  sDate.setFullYear(sDate.getFullYear() - 1);
+  var formattedData = [];
 
-app.get('/ticker/:id', (req, res) => {
-    var ticker = req.params.id;
-    // return in this format -> [TimeStamp,O,H,L,C]
-    var eDate = new Date(); // today
-    var sDate = new Date();
-    sDate.setFullYear(sDate.getFullYear() - 1);
-    //eDate = Math.floor(eDate.getTime() / 1000)
-    //sDate = Math.floor(sDate.getTime() / 1000)
-    var formattedData = [];
-
-    alpaca
-      .getBars("5Min", ticker, {
-        start: sDate,
-        end: eDate,
-        limit: 100
-      })
-      .then((data) => {
-        console.log(data)
-        //data[ticker].map((candle) => {
-        //  formattedData.push([
-        //    new Date(candle["startEpochTime"] * 1000).toLocaleString(),
-        //    candle["openPrice"],
-        //    candle["highPrice"],
-        //    candle["lowPrice"],
-        //    candle["closePrice"],
-        //  ]);
-        //});
-        data[ticker].map((candle) => {
-          formattedData.push({
-            x: new Date(candle["startEpochTime"] * 1000).toLocaleString(),
-            y: [candle["openPrice"], candle["highPrice"], candle["lowPrice"], candle["closePrice"]]
-          })
-        })
-        console.log(formattedData)
-        res.json(formattedData)
+  alpaca
+    .getBars(limit, ticker, {
+      start: sDate,
+      end: eDate,
+      limit: 100,
+    })
+    .then((data) => {
+      data[ticker].map((candle) => {
+        formattedData.push({
+          x: new Date(candle["startEpochTime"] * 1000).toLocaleString(),
+          y: [
+            candle["openPrice"],
+            candle["highPrice"],
+            candle["lowPrice"],
+            candle["closePrice"],
+          ],
+        });
       });
-})
+      res.json(formattedData);
+    });
+});
 
 app.listen(3001, () => {
-    console.log('Express server running on localhost:3001')
-})
+  console.log("Express server running on localhost:3001");
+});
