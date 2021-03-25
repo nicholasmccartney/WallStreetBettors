@@ -12,7 +12,7 @@ class Search extends React.Component {
 
     setTicker = (data) => {
         this.setState({
-            ticker: data.target.value
+            ticker: data.target.value.toUpperCase()
         })
     }
 
