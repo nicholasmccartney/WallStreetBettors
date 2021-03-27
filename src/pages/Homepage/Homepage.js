@@ -49,9 +49,11 @@ class Homepage extends React.Component {
     fetch(`/ticker/${ticker}`)
     .then(res => res.json())
     .then(data => {
-      this.setState({data: data})
-      this.state.sma = getSMA(this.state.data,5)
-      this.state.sma2 = getSMA(this.state.data,20)
+      this.setState({
+        data: data,
+        sma: getSMA(data, 5),
+        sma2: getSMA(data, 20)
+      })
     })
   }
   
