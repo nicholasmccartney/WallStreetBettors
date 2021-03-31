@@ -52,34 +52,6 @@ class Homepage extends React.Component {
           },
         },
       },
-      xaxis: {
-        categories: ['3/23 02:50'],
-        //tooltip: {
-        //  formatter: function (val, opts) {
-        //    //console.log(opts.w.globals.categoryLabels[val-1])
-        //    var t = dayjs(opts.w.globals.categoryLabels[val - 1]);
-        //    return t.format("MM/DD hh:mm")
-        //  }
-        //},
-        labels: {
-          show: false,
-          //formatter: function (value) {
-          //  var t = dayjs(value);
-          //  return t.format("MM/DD hh:mm");
-          //},
-        },
-      },
-      tooltip: {
-        x: {
-          show: true,
-        },
-        fixed: {
-          enabled: true,
-          position: "topRight",
-          offsetX: -10,
-          offsetY: 30,
-        },
-      },
     };
     console.log(this.state.data)
     return (
