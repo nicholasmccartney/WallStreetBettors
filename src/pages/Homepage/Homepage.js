@@ -4,7 +4,9 @@ import "./Homepage.css"
 import { getTickerData } from '../../api/api.js'
 import {series} from "./tempData.js"
 import Search from './tickerSearch.js'
-import axios from 'axios'
+
+const queryString = require("query-string")
+var dayjs = require("dayjs");
 
 class Homepage extends React.Component {
 
@@ -16,13 +18,19 @@ class Homepage extends React.Component {
     }
   }
 
-  handleChange = (data) => {
-    this.setState({ticker: data.target.value})
-  }
   handleSubmit = (event) => {
     event.preventDefault()
     var ticker = event.target[0].value;
-    fetch(`/ticker/${ticker}`)
+    var params = {
+      sDate: undefined,
+      eDate: undefined,
+      interval: "5Min",
+      limit: 100,
+    };
+
+    var query = queryString.stringify(params);
+
+    fetch(`/ticker/${ticker}${query !== "" ? "?" + query : ""}`)
     .then(res => res.json())
     .then(data => {
       this.setState({data: data})
@@ -39,15 +47,16 @@ class Homepage extends React.Component {
           style: {
             colors: ["#000000"],
           },
+          formatter: function (val) {
+            return `$${val.toFixed(2)}`;
+          },
         },
       },
-      xaxis: {
-        labels: {
-        }
-      }
     };
+    console.log(this.state.data)
     return (
       <div className="App-header">
+        <br/>
         <Search onSubmit={this.handleSubmit}/>
         <br/>
         {this.state.data !== null && 
@@ -61,7 +70,7 @@ class Homepage extends React.Component {
           type="candlestick"
           className="candlestickchart"
           width="1200px"
-          height="750px"
+          height="700px"
         />}
       </div>
     );
