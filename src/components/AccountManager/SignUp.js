@@ -53,6 +53,7 @@ export default function SignUp(props) {
         </p>
       }
       modal
+      nested
     >
       {(close) => (
         <div className="modal">
