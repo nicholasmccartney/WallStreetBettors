@@ -2,7 +2,6 @@ import React from 'react'
 import Chart from "react-apexcharts";
 import "./Homepage.css"
 import { getTickerData } from '../../api/api.js'
-import {series} from "./tempData.js"
 import Search from './tickerSearch.js'
 
 const queryString = require("query-string")
@@ -53,7 +52,6 @@ class Homepage extends React.Component {
         },
       },
     };
-    console.log(this.state.data)
     return (
       <div className="App-header">
         <br/>
