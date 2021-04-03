@@ -1,0 +1,38 @@
+.modal {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    background-color: #282c34;
+    border: 5px solid gray;
+    height: 500px;
+    width: 450px;
+    border-radius: 25px;
+    align-items: center;
+}
+
+.popup-overlay {
+    background: rgba(0,0,0,0.5);
+}
+
+.form {
+    padding-top: 40%;
+    color: white;
+}
+
+div input {
+    width: 100%;
+}
+
+.modal > .close {
+  cursor: pointer;
+  position: absolute;
+  display: block;
+  padding: 2px 5px;
+  line-height: 20px;
+  right: -10px;
+  top: -10px;
+  font-size: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #cfcece;
+}
