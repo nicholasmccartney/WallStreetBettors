@@ -33,4 +33,5 @@ EZ-Trade relies on environment variables that store the API keys for Alpaca and 
     REACT_APP_FIREBASE_APP_ID=FIREBASE_APP_ID
     REACT_APP_FIREBASE_MEASUREMENT_ID=FIREBASE_MEASUREMENT_ID
 
+
 Alpaca Credentials can be found through your personal Alpaca API account. Firebase Credentials can be aquired from the groups Firebase Project Console.
