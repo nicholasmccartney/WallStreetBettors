@@ -37,6 +37,20 @@ export const generateUserDocument = async (user, additionalData) => {
     return getUserDocument(user.uid);
 };
 
+export const updateUserDocument = async (user, additionalData) => {
+    if (!user) return;
+    const userRef = firestore.doc(`users/${user.uid}`);
+    const snapshot = await userRef.get();
+    if (snapshot.exists) {
+        try {
+            await userRef.update(additionalData)
+            window.location.reload()
+        } catch (error) {
+            console.log("error updating user", error)
+        }
+    }
+}
+
 const getUserDocument = async uid => {
     if (!uid) return null;
     try {

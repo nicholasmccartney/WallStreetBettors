@@ -5,3 +5,8 @@
     flex-direction: row;
     justify-content: space-evenly;
 }
+
+.loaders {
+    display: flex;
+    flex-direction: row;
+}

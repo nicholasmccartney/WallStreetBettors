@@ -5,7 +5,6 @@ const queryString = require("query-string");
 
 function getWatchlistTickers(tickers, setWatchlist) {
   var query = queryString.stringify({ tickers: tickers.toString() });
-  var watchListItems = [];
   fetch(`/watchlist${query !== "" ? "?" + query : ""}`)
     .then((res) => res.json())
     .then((data) => {
@@ -24,10 +23,9 @@ function Watchlist() {
   if (user === null || user === undefined) {
     return null;
   } else {
-    if (watchlist == "") {
+    if (watchlist === "") {
       getWatchlistTickers(user.watchlist, setWatchlist);
     }
-    console.log(watchlist)
 
     return (
         <div className="watchlist-bar">

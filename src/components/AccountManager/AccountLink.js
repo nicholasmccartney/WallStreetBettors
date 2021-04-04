@@ -8,6 +8,7 @@ import "./Account.css";
 
 export default function AccountLink(props) {
   const user = useContext(UserContext);
+
   return (
     <Popup
       trigger={(open) => (

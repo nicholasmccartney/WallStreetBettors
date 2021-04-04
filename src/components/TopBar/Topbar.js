@@ -1,6 +1,7 @@
 import React from 'react'
 import './topbar.css'
 import logo from "../../assets/ez_trade_logo.png"
+import logoSVG from "../../assets/logo_full_blue.svg";
 import avatar from "../../assets/default_avatar.png";
 import { Link } from "react-router-dom";
 import {
@@ -18,7 +19,7 @@ class Topbar extends React.Component {
     this.state = {
       loading: false,
       loggedIn: false,
-      user: null
+      user: null,
     };
   }
 
@@ -37,23 +38,29 @@ class Topbar extends React.Component {
 
   getMarketStatus = () => {
     checkIfOpen(this.setFetchedData);
-  }
+  };
 
   componentDidMount() {
-    this.getMarketStatus()
+    this.getMarketStatus();
   }
 
   render() {
-
     if (this.state.loading === false) {
       return (
         <div>
           <div className="container">
             <Link to="/">
-              <img src={logo} alt="logo" height="50" width="75"></img>
+              <img src={logoSVG} alt="logo" height="50" width="75"></img>
             </Link>
-            <AccountManager/>
-            
+            <div className="links">
+              <Link to="/">
+                <p>Home</p>
+              </Link>
+              <Link to="/strategies">
+                <p>Strategies</p>
+              </Link>
+            </div>
+            <AccountManager />
           </div>
           <div>
             <div
@@ -71,15 +78,12 @@ class Topbar extends React.Component {
                 resetTimer={this.getMarketStatus}
               />
             </div>
-            <Watchlist/>
-
+            <Watchlist />
           </div>
         </div>
       );
     } else {
-      return (
-        null
-      )
+      return null;
     }
   }
 }
