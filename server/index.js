@@ -53,7 +53,7 @@ app.get('/ticker/:id', (req, res) => {
             y: [candle["openPrice"], candle["highPrice"], candle["lowPrice"], candle["closePrice"]]
           })
         })
-        console.log(formattedData)
+        //console.log(formattedData)
         res.json(formattedData)
       });
 })
