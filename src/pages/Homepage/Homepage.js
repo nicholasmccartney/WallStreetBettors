@@ -23,9 +23,18 @@ function getSMA(data,period){
     for(var i = 0; i < period - 1; i++){
       arr.unshift({x:"undefined",y:null})
     }
-  console.log(data)
-  console.log(arr)
   return arr;
+}
+
+function getEMA(data,period){
+  var multiplier = 2/(1+ period)
+  var ema = getSMA(data,period);
+  for(var i = period - 1; i < data.length; i++){
+    if(ema[i-1].y){
+      ema[i].y = (data[i].y[3] - ema[i-1].y) * multiplier + ema[i-1].y
+    } 
+  }
+  return ema;
 }
 
 class Homepage extends React.Component {
@@ -36,7 +45,9 @@ class Homepage extends React.Component {
       ticker: '',
       data: null,
       sma: null,
-      sma2: null
+      sma2: null,
+      ema: null,
+      ema2: null
     }
   }
 
@@ -52,7 +63,9 @@ class Homepage extends React.Component {
       this.setState({
         data: data,
         sma: getSMA(data, 5),
-        sma2: getSMA(data, 20)
+        sma2: getSMA(data, 20),
+        ema: getEMA(data,5)
+        // ema2: getEMA(data,20)
       })
     })
   }
@@ -60,7 +73,7 @@ class Homepage extends React.Component {
   render () {
     var options = {
       chart: {
-        id: "candlestick",
+        id: "candlestick"
       },
       yaxis: {
         labels: {
@@ -80,11 +93,72 @@ class Homepage extends React.Component {
         width:[1,5,5]
       },
     };
+  
+    var optionsBar = {
+      chart: {
+        height: 160,
+        type: 'bar',
+        brush: {
+          enabled: true,
+          target: 'candles'
+        },
+        selection: {
+          enabled: true,
+          xaxis: {
+            min: new Date('20 Jan 2017').getTime(),
+            max: new Date('10 Dec 2017').getTime()
+          },
+          fill: {
+            color: '#ccc',
+            opacity: 0.4
+          },
+          stroke: {
+            color: '#0D47A1',
+          }
+        },
+      },
+      dataLabels: {
+        enabled: false
+      },
+      plotOptions: {
+        bar: {
+          columnWidth: '80%',
+          colors: {
+            ranges: [{
+              from: -1000,
+              to: 0,
+              color: '#F15B46'
+            }, {
+              from: 1,
+              to: 10000,
+              color: '#FEB019'
+            }],
+      
+          },
+        }
+      },
+      stroke: {
+        width: 0
+      },
+      xaxis: {
+        type: 'datetime',
+        axisBorder: {
+          offsetX: 13
+        }
+      },
+      yaxis: {
+        labels: {
+          show: false
+        }
+      }
+    };
+    console.log(this.state.ema)
     return (
       <div className="App-header">
         <Search onSubmit={this.handleSubmit}/>
         <br/>
-        {this.state.data !== null && this.state.sma !== null &&
+        {(this.state.ema !== null && this.state.sma !== null && this.state.ema !== null) &&
+        <div> 
         <Chart
           options={options}
           series={[
@@ -103,12 +177,33 @@ class Homepage extends React.Component {
               type:"line",
               data: this.state.sma2
             }
+            // {
+            //   name:"ema5",
+            //   type:"line",
+            //   data: this.state.ema
+            // }
+            // },
+            // {
+            //   name:"ema20",
+            //   type:"line",
+            //   data: this.state.ema2
+            // }
           ]}
-          type="line"
           className="candlestickchart"
           width="1200px"
           height="750px"
-        />}
+        />
+        <Chart
+          options={optionsBar}
+          seriesbar={[
+          {
+            name: 'volume',
+            data: this.state.ema
+          }
+          ]}
+        />
+        </div>
+        }
       </div>
     );
 
