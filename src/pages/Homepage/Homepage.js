@@ -19,7 +19,7 @@ function getSMA(data, period) {
             data[i + period - 1].y[3]) /
           period,
       });
-    } else {
+    } else if(data[i].y[3] !== null) {
       for (var j = i; j < i + period; j++) {
         value += data[j].y[3];
       }
@@ -27,13 +27,15 @@ function getSMA(data, period) {
       value = 0;
     }
   }
-  for (var i = 0; i < period - 1; i++) {
+  var length = arr.length + 1
+  console.log(length + " " + period)
+  for (var i = 0; i < 101 - length ; i++) {
     arr.unshift({ x: "undefined", y: null });
   }
   return arr;
 }
 
-function getEMA(data, period) {
+function getCandleEMA(data, period) {
   var multiplier = 2 / (1 + period);
   var ema = getSMA(data, period);
   for (var i = period - 1; i < data.length; i++) {
@@ -44,6 +46,52 @@ function getEMA(data, period) {
   return ema;
 }
 
+function linetocandle(data){
+  var candledata = [];
+  for(var i = 0; i <data.length; i++){
+    candledata.push({
+      x: data[i].x,
+      y: [null,null,null,data[i].y]
+    })
+  }
+  return candledata;
+}
+
+function getMACD(data, period1, period2){
+  var macd = [];
+  var greater = period1 > period2 ? period1 : period2
+  var ema26 = getCandleEMA(data,period1)
+  var ema12 = getCandleEMA(data,period2)
+  for(var i = 0; i < greater; i++){
+    macd.push({
+      x:data[i].x,
+      y:null
+    })
+  }
+  for(var i = greater; i < data.length; i++){
+    macd.push({x:ema26[i].x,y:ema12[i].y - ema26[i].y})
+  }
+  return macd;
+}
+
+function getHistogram(data1, data2) {
+  var histData = [];
+  for(var i = 0; i < data1.length;i++){
+    if(data1[i].y !== null && data2[i].y !== null){
+      histData.push({
+        x:data1[i].x,
+        y:data1[i].y - data2[i].y,
+      })
+    } else{
+      histData.push({
+        x: "undefined",
+        y: null
+      })
+    }
+  }
+  return histData
+}
+
 class Homepage extends React.Component {
   constructor(props) {
     super(props);
@@ -52,8 +100,8 @@ class Homepage extends React.Component {
       data: null,
       sma: null,
       sma2: null,
-      ema: null,
-      ema2: null,
+      macd: null,
+      signal: null,
     };
   }
 
@@ -70,8 +118,8 @@ class Homepage extends React.Component {
           data: data,
           sma: getSMA(data, 5),
           sma2: getSMA(data, 20),
-          ema: getEMA(data, 5),
-          // ema2: getEMA(data,20)
+          macd: getMACD(data,26,12),
+          signal: getSMA(linetocandle(getMACD(data,26,12)),9)
         });
       });
   };
@@ -79,6 +127,7 @@ class Homepage extends React.Component {
   render() {
     var options = {
       chart: {
+        group: "combine",
         id: "candlestick",
       },
       yaxis: {
@@ -86,95 +135,30 @@ class Homepage extends React.Component {
           style: {
             colors: ["#000000"],
           },
+          minWidth: 40
         },
       },
-      // xaxis: {
-      //   labels: {
-      //   },
-      // },
+      tooltip: {
+        enabled: true,
+        shared: true,
+      },
       markers: {
-        size: 1,
+        size: .5,
       },
       stroke: {
         width: [1, 5, 5],
       },
     };
-
-    var optionsBar = {
-      chart: {
-        height: 160,
-        type: "bar",
-        brush: {
-          enabled: true,
-          target: "candles",
-        },
-        selection: {
-          enabled: true,
-          xaxis: {
-            min: new Date("20 Jan 2017").getTime(),
-            max: new Date("10 Dec 2017").getTime(),
-          },
-          fill: {
-            color: "#ccc",
-            opacity: 0.4,
-          },
-          stroke: {
-            color: "#0D47A1",
-          },
-        },
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      plotOptions: {
-        bar: {
-          columnWidth: "80%",
-          colors: {
-            ranges: [
-              {
-                from: -1000,
-                to: 0,
-                color: "#F15B46",
-              },
-              {
-                from: 1,
-                to: 10000,
-                color: "#FEB019",
-              },
-            ],
-          },
-        },
-      },
-      stroke: {
-        width: 0,
-      },
-      xaxis: {
-        type: "datetime",
-        axisBorder: {
-          offsetX: 13,
-        },
-      },
-      yaxis: {
-        labels: {
-          show: false,
-        },
-      },
-    };
-
-    var optionsTest = {
-      chart: {
-        type: "line",
-      },
-    };
-
-    console.log(this.state.ema);
+    console.log(this.state.data)
+    console.log(this.state.sma)
+    console.log(this.state.sma2)
+    console.log(this.state.macd)
     return (
       <div className="App-header">
         <Search onSubmit={this.handleSubmit} />
         <br />
-        {this.state.ema !== null &&
-          this.state.sma !== null &&
-          this.state.ema !== null && (
+        {this.state.data !== null &&
+          this.state.sma !== null && (
             <div>
               <Chart
                 options={options}
@@ -194,30 +178,68 @@ class Homepage extends React.Component {
                     type: "line",
                     data: this.state.sma2,
                   },
-                  // {
-                  //   name:"ema5",
-                  //   type:"line",
-                  //   data: this.state.ema
-                  // }
-                  // },
-                  // {
-                  //   name:"ema20",
-                  //   type:"line",
-                  //   data: this.state.ema2
-                  // }
                 ]}
                 className="candlestickchart"
                 width="1200px"
                 height="750px"
               />
+              <br />
               <Chart
-                options={optionsTest}
+                options={{
+                  chart: {
+                    group: "combine",
+                    id: "macd",
+                    type: "line",
+                  },
+                  yaxis: {
+                    labels: {
+                      minWidth: 40
+                    }
+                  },
+                  markers: {
+                    size: .5,
+                  },
+                  stroke: {
+                    width: [2,2],
+                  },
+                  plotOptions: {
+                    bar: {
+                      colors: {
+                        ranges: [{
+                          from: -1000,
+                          to: 0,
+                          color: '#de0408'
+                        }, {
+                          from: 0,
+                          to: 1000,
+                          color: '#1bfa44'
+                        }]
+                      }
+                    }
+                  },
+                  stroke: {
+                    width: [2,2,0],
+                  }
+                }}
                 series={[
                   {
-                    name: "volume",
-                    data: this.state.ema,
+                    name: "macd",
+                    type: "line",
+                    data: this.state.macd,
+                  },
+                  {
+                    name: "signal",
+                    type: "line",
+                    data: this.state.signal,
+                  },
+                  {
+                    name:"test",
+                    type: "bar",
+                    data: getHistogram(this.state.macd, this.state.signal)
                   },
                 ]}
+                className = "macdchart"
+                height = "300px"
               />
             </div>
           )}
