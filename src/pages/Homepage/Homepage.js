@@ -3,7 +3,6 @@ import Chart from "react-apexcharts";
 import "./Homepage.css"
 import { getTickerData } from '../../api/api.js'
 import Search from './tickerSearch.js'
-import { logo } from "../../assets/logo"
 
 const queryString = require("query-string")
 var dayjs = require("dayjs");
