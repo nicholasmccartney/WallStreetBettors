@@ -11,7 +11,7 @@ class Search extends React.Component {
       ticker: "",
       date1: null,
       date2: null,
-
+      limit: 100,
     };
   }
 
@@ -33,7 +33,14 @@ class Search extends React.Component {
     });
   };
 
+  setLimit = (event, val) => {
+    this.setState({
+      limit: val
+    })
+  }
+
   render() {
+    console.log(this.state)
     return (
       <form onSubmit={this.props.onSubmit}>
           <input
@@ -66,6 +73,7 @@ class Search extends React.Component {
             max={1000}
             defaultValue={100}
             steps={10}
+            onChange={this.setLimit}
             marks
             />
 
