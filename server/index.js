@@ -37,14 +37,14 @@ app.use(cors());
 app.get("/ticker/:id", (req, res) => {
   let parsedUrl = url.parse(req.originalUrl);
   let parsedQs = querystring.parse(parsedUrl.query);
-  //console.log(parsedUrl);
-  //console.log(parsedQs);
+  console.log(parsedUrl);
+  console.log(parsedQs);
   var ticker = req.params.id;
   var limit = parsedQs.limit ? parsedQs.limit : "1000";
   var interval = parsedQs.interval ? parsedQs.interval : "1Min"
-  var eDate = parsedQs.eDate ? parsedQs.eDate : new Date(); // today
-  var sDate = parsedQs.sDate ? parsedQs.sDate : new Date();
-  sDate.setFullYear(sDate.getFullYear() - 1);
+  var eDate = parsedQs.eDate ? new Date(parsedQs.eDate) : new Date(); // today
+  var sDate = parsedQs.sDate ? new Date(parsedQs.sDate) : new Date();
+  //sDate.setFullYear(sDate.getFullYear() - 1);
   var formattedData = [];
 
   alpaca

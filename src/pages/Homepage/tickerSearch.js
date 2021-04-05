@@ -40,9 +40,9 @@ class Search extends React.Component {
   }
 
   render() {
-    console.log(this.state)
+    //console.log(this.state)
     return (
-      <form onSubmit={this.props.onSubmit}>
+      <form className="search" onSubmit={this.props.onSubmit}>
           <input
             type="text"
             placeholder="Search for a stock ticker"
@@ -59,13 +59,11 @@ class Search extends React.Component {
           <DatePicker selected={this.state.date1} 
             onChange={this.setDate1} 
             maxDate= {new Date()} 
-            isClearable 
             placeholderText="Choose Start Date"/>
 
           <DatePicker selected={this.state.date2} 
             onChange={this.setDate2} 
             maxDate= {new Date()} 
-            isClearable 
             placeholderText="Choose End Date"/>
 
           <Slider 
@@ -76,6 +74,7 @@ class Search extends React.Component {
             onChange={this.setLimit}
             marks
             />
+            <span>{this.state.limit}</span>
 
         <input type="submit" value="Submit" />
       </form>
