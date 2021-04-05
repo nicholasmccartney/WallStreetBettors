@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import Popup from "reactjs-popup";
-import { useContext } from "react";
-import { UserContext } from "../../providers/UserProvider";
 import logoSVG from "../../assets/logo_diamond.svg";
 import welcomeSVG from "../../assets/sign_up_white2.svg";
 
@@ -51,17 +49,9 @@ export default function SignUp(props) {
   return (
     <Popup
       trigger={
-        <p>
-          No Account?{" "}
-          <a
-            href=""
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
-            Sign Up!
-          </a>
-        </p>
+        <button>
+          No Account? Sign Up Here!
+        </button>
       }
       modal
       closeOnDocumentClick

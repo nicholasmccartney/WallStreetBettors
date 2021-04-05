@@ -1,14 +1,7 @@
 import React from 'react'
 import './topbar.css'
-import logo from "../../assets/ez_trade_logo.png"
 import logoSVG from "../../assets/logo_full_blue.svg";
-import avatar from "../../assets/default_avatar.png";
 import { Link } from "react-router-dom";
-import {
-  checkIfOpen,
-  checkWhenOpenedToday,
-  printAccountInfo,
-} from "../../api/api.js";
 import Timer from "../Timer/Timer.js";
 import AccountManager from '../AccountManager/AccountManager.js';
 import Watchlist from "../Watchlist/Watchlist.js"
@@ -23,11 +16,6 @@ class Topbar extends React.Component {
     };
   }
 
-  setFetchedData = (data) => {
-    this.setState(data);
-    this.setState({ loading: false });
-  };
-
   marketStatus = () => {
     if (this.state.is_open) {
       return "Market Open";
@@ -37,7 +25,11 @@ class Topbar extends React.Component {
   };
 
   getMarketStatus = () => {
-    checkIfOpen(this.setFetchedData);
+    fetch("/marketStatus")
+      .then((res) => res.json())
+      .then((data) => {
+        this.setState({ ...data });
+      });
   };
 
   componentDidMount() {

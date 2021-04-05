@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { UserContext } from "../../providers/UserProvider";
 import avatar from "../../assets/default_avatar.png";
 import "./Account.css";
 import { useState } from "react";
-import { auth, updateUserDocument } from "../../firebase";
+import { updateUserDocument } from "../../firebase";
 import { BounceLoader as Loader } from "react-spinners";
 
 function Account() {
@@ -13,7 +13,6 @@ function Account() {
   const [displayName, setDisplayName] = useState(undefined)
   const [photoURL, setPhotoURL] = useState(undefined);
   const [watchlist, setWatchlist] = useState(undefined);
-  const [color1, setColor1] = useState("#");
 
   const editAccount = (event) => {
     event.preventDefault()

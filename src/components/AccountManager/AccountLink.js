@@ -1,5 +1,5 @@
 import Popup from "reactjs-popup";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { UserContext } from "../../providers/UserProvider";
 import { auth } from "../../firebase";
 import avatar from "../../assets/default_avatar.png";

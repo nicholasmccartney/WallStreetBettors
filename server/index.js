@@ -1,5 +1,4 @@
 var express = require("express");
-var bodyParser = require("body-parser");
 var cors = require("cors");
 var app = express();
 
@@ -83,6 +82,14 @@ app.get("/watchlist", (req, res) => {
     console.log(formattedData)
     res.json(formattedData)
   });
+});
+
+app.get("/marketStatus", (req, res) =>  {
+  alpaca 
+    .getClock()
+    .then((clock) => {
+      res.json(clock);
+    })
 });
 
 app.listen(3001, () => {

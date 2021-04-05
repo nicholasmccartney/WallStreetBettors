@@ -1,6 +1,5 @@
 import Popup from "reactjs-popup";
-import React, { useContext, useState } from "react";
-import { UserContext } from "../../providers/UserProvider";
+import React, { useState } from "react";
 import SignUp from "./SignUp";
 import { auth } from "../../firebase";
 import logoSVG from "../../assets/logo_diamond.svg";
