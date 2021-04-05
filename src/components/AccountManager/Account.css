@@ -3,24 +3,36 @@
   flex-direction: column;
   font-size: 12px;
   background-color: #282c34;
-  border: 5px solid gray;
+  border: 5px solid #ffffff;
   height: 500px;
   width: 450px;
   border-radius: 25px;
   align-items: center;
+
 }
 
 .account-link {
   padding-top: 2px;
 }
 
-.popup-overlay {
+.sign-up-overlay {
+  background: rgba(0, 0, 0, 0);
+}
+.sign-in-overlay {
   background: rgba(0, 0, 0, 0.5);
 }
 
 .form {
-  padding-top: 40%;
-  color: white;
+  padding-top: 10%;
+  color: white; 
+  width: 65%;
+}
+
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 10%;
 }
 
 div input {
@@ -67,4 +79,8 @@ div input {
 .settings-button {
     padding: 5px 10px;
     margin: 1px 0px;
+}
+
+.error {
+  color: red;
 }

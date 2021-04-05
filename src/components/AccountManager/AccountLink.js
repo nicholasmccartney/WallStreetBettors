@@ -14,7 +14,7 @@ export default function AccountLink(props) {
       trigger={(open) => (
         <div className="account-link">
           <img
-            src={user ? user.photoURL : avatar}
+            src={user && user.photoURL ? user.photoURL : avatar}
             alt="avatar"
             height="45"
             width="45"

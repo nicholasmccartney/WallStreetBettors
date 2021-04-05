@@ -18,10 +18,6 @@ export default function AccountManager(props) {
   } else {
     return (
       <AccountLink/>
-      //<Link className="account-link" to="/account">
-      //  <img src={avatar} alt="avatar" height="45" width="45"></img>
-      //  <p>Account</p>
-      //</Link>
     );
   }
 }

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Popup from "reactjs-popup";
 import { useContext } from "react";
 import { UserContext } from "../../providers/UserProvider";
+import logoSVG from "../../assets/logo_diamond.svg";
+import welcomeSVG from "../../assets/sign_up_white2.svg";
 
 import "./Account.css";
 import { auth, generateUserDocument } from "../../firebase";
@@ -11,20 +13,29 @@ export default function SignUp(props) {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState(null);
-  const createUserWithEmailAndPasswordHandler = async (event, email, password) => {
+  const createUserWithEmailAndPasswordHandler = async (
+    event,
+    email,
+    password
+  ) => {
     event.preventDefault();
 
     try {
-        const {user} = await auth.createUserWithEmailAndPassword(email, password);
-        generateUserDocument(user, {displayName});
-    } catch(error) {
-        setError("Error signing up with email and password");
-        console.log(error)
+      const { user } = await auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+      generateUserDocument(user, { displayName });
+    } catch (error) {
+      if (error.code === "auth/invalid-email") {
+        setError("Invalid Email");
+      } else if (error.code === "auth/weak-password") {
+        setError("Password is too weak. Please use at least 6 characters.");
+      } else {
+        setError(error.message);
+        alert(error.message, "Please contact support.");
+      }
     }
-
-    setEmail("");
-    setPassword("");
-    setDisplayName("");
   };
   const onChangeHandler = (event) => {
     const { name, value } = event.currentTarget;
@@ -53,13 +64,17 @@ export default function SignUp(props) {
         </p>
       }
       modal
-      nested
+      closeOnDocumentClick
+      className="sign-up"
     >
       {(close) => (
         <div className="modal">
-          <h3>Welcome to EZ-Trade!</h3>
-          <form>
-            <div className="form">
+          <div className="welcome">
+            <img src={welcomeSVG} alt="welcome"/>
+            <img src={logoSVG} alt="logo" height="150" width="150"></img>
+          </div>
+          <form className="form">
+            <div>
               <label htmlFor="displayName">Display Name:</label>
               <input
                 type="text"
@@ -86,9 +101,16 @@ export default function SignUp(props) {
                 name="userPassword"
                 value={password}
                 id="userPassword"
+                placeholder="6 Characters"
                 onChange={(event) => onChangeHandler(event)}
               ></input>
-
+              {error && (
+                <div>
+                  <span className="error">{error}</span>
+                  <br />
+                  <br />
+                </div>
+              )}
               <button
                 onClick={(event) => {
                   createUserWithEmailAndPasswordHandler(event, email, password);

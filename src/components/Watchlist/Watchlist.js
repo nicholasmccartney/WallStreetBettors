@@ -4,6 +4,8 @@ import "./Watchlist.css";
 const queryString = require("query-string");
 
 function getWatchlistTickers(tickers, setWatchlist) {
+  if (tickers === undefined) return;
+  
   var query = queryString.stringify({ tickers: tickers.toString() });
   fetch(`/watchlist${query !== "" ? "?" + query : ""}`)
     .then((res) => res.json())

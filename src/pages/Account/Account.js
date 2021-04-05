@@ -66,7 +66,7 @@ function Account() {
         {!edit && (
           <div className="account-content">
             <img
-              src={user ? photoURL : avatar}
+              src={user && photoURL ? photoURL : avatar}
               alt="avatar"
               height="200"
               width="200"
