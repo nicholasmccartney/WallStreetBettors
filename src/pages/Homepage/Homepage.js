@@ -149,10 +149,7 @@ class Homepage extends React.Component {
         width: [1, 5, 5],
       },
     };
-    console.log(this.state.data)
-    console.log(this.state.sma)
-    console.log(this.state.sma2)
-    console.log(this.state.macd)
+
     return (
       <div className="App-header">
         <Search onSubmit={this.handleSubmit} />
