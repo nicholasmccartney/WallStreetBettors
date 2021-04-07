@@ -1,10 +1,10 @@
-import React from 'react'
+import React from 'react';
 import Chart from "react-apexcharts";
 import "./Homepage.css"
 import { getTickerData } from '../../api/api.js'
 import {series} from "./tempData.js"
 import Search from './tickerSearch.js'
-import axios from 'axios'
+import data from "@alpacahq/alpaca-trade-api/lib/resources/data";
 
 // Universal variables so that they can be used in the getCross function
 // Since getSMA gets called twice for (5,20) this universal variable stores sma5 in the function 
@@ -12,88 +12,168 @@ import axios from 'axios'
 var sma5 =[];
 var sma20 = [];
 
-function getSMA(data,period){
+const queryString = require("query-string")
+var dayjs = require("dayjs");
+
+var sma5, sma20 = [];
+
+function getSMA(data, period) {
   var arr = [];
   var value = 0;
-  for(var i = 0; i <= data.length - period; i++){
-      if(arr[i-1]){
-        arr.push({x:data[i+period-1].x,y:(arr[i-1].y * period - data[i-1].y[3] + data[i+period-1].y[3]) / period})
-      } else{
-        for(var j = i; j < i+period; j++){
-          value += data[j].y[3]
-        }
-        arr.push({x:data[i+period-1].x,y:(value / period)})
-        value = 0
+  for (var i = 0; i <= data.length - period; i++) {
+    if (arr[i - 1]) {
+      arr.push({
+        x: data[i + period - 1].x,
+        y:
+          (arr[i - 1].y * period -
+            data[i - 1].y[3] +
+            data[i + period - 1].y[3]) /
+          period,
+      });
+    } else if(data[i].y[3] !== null) {
+      for (var j = i; j < i + period; j++) {
+        value += data[j].y[3];
       }
-  }
-    for(var i = 0; i < period - 1; i++){
-      arr.unshift({x:"undefined",y:null})
+      arr.push({ x: data[i + period - 1].x, y: value / period });
+      value = 0;
     }
-  
-  getCross(arr,period);
-  //console.log(data)
-  //console.log(arr)
+  }
+  var length = arr.length + 1
+  console.log(length + " " + period)
+  for (var i = 0; i < 101 - length ; i++) {
+    arr.unshift({ x: "undefined", y: null });
+  }
+  getCross(arr,period)
   return arr;
 }
+
 // getCross shows when the sma5 and sma20 cross it then takes into
 // account the price and will buy or sell depending on previous action
-function getCross(arr,period){
+function getCross(arr, period) {
   var sma20Single, sma5Single;
-  var cross , previousCross = false;
+  var cross, previousCross = false;
   var buy = true;
-  var totalMoney =0;
+  var totalMoney = 0;
+  var test =[];
+  
   // setting the universal array variables to sma5, and sma20 equal to 
   // their respective calls
-  if(period === 5) sma5 = arr;
-  if(period === 20) sma20 = arr;
-  
+  if (period === 5) sma5 = arr;
+  if (period === 20) sma20 = arr;
+
   // will iterate through the length of the sma20 array (all of the data points)
-  for(var i =0; i < sma20.length; i++){
+  for (var i = 0; i < sma20.length; i++) {
 
     // This checks if the values are undefined incase we get 
     // bad/missing data and just wont run anything in that case. 
-    if((sma20[i] !==undefined && sma5[i] !== undefined)){
+    if ((sma20[i] !== undefined && sma5[i] !== undefined)) {
 
       //Setting objects equal to a single datapoint so the properties (x(date),y(price)) can be used
       sma20Single = Object.values(sma20[i]);
       sma5Single = Object.values(sma5[i]);
-      
       // Checks if the values arent null. Due to it being '20 data pt simple moving average' 
       // before 20 data pts it is null
-      if(sma20Single[1] !== null && sma5Single [1] !== null){
-        
-        // logic needs to be changed slightly incase sma5 starts greater than sma20
-        // as it shows an instant buy but this will only impact the first run if the above is true
-        if(sma5Single[1] > sma20Single[1]){
+      if (sma20Single[1] !== null && sma5Single[1] !== null) {
+
+        //if shorter (sma20) is greater than sma5 then its a buy signal
+        //We should then buy the stock even is sma20 starts out higher (this wouldnt matter with live trading)
+        //The cycle then continues aslong as it starts like this to buy whenever sma20 is higher then sma5
+        if (sma5Single[1] > sma20Single[1]) {
           cross = true;
         }
-        if(sma5Single[1] < sma20Single[1]){
+        if (sma5Single[1] < sma20Single[1]) {
           cross = false;
         }
 
         // First time a cross is set to true (sma5 > sma20) then it will signal a cross and a buy must happen
-        if(cross !== previousCross){
+        if (cross !== previousCross) {
           // Then the previousCross signal is set to the same as the current cross signal it it can see 
           // when a change happens the next time for it to run
           previousCross = cross;
-          console.log(`Lined Crossed at: ${sma5Single[0]}`);
+          //console.log(`Lined Crossed at: ${sma5Single[0]}`);
 
-          if(buy === true){
+          if (buy === true) {
             //totalMoney variable once something is bought it set = to the -purchase price
             totalMoney -= sma5Single[1];
-            console.log(`Buy! @ ${sma5Single[1]}`);
+            //console.log(`Buy! @ ${sma5Single[1]}`);
+            test.push({x: sma5Single[0],borderColor:'#1bfa44', label: {text: 'Buy'}, borderWidth: 3})
+            //datesBought = [sma5Single];
+            //boughtAndSoldMap[sma5Single[0]] = sma5Single[1];
             buy = false;
-          }else{
+          } else {
             // totamoney variable once something is sold is set = to the + sell price
             totalMoney += sma5Single[1]
-            console.log(`Sell! @ ${sma5Single[1]}`);
-            console.log(`profit: $${totalMoney} per share`)
+            //console.log(`Sell! @ ${sma5Single[1]}`);
+            //console.log(`profit: $${totalMoney} per share`)
+            test.push({x: sma5Single[0],borderColor:'#de0408', label: {text: 'Sell'},borderWidth: 3})
+            //boughtAndSoldMap[sma5Single[0]] = sma5Single[1]
             buy = true;
           }
         }
       }
     }
   }
+  //console.log(test)
+  return test;
+}
+
+
+function getCandleEMA(data, period) {
+  var multiplier = 2 / (1 + period);
+  var ema = getSMA(data, period);
+  for (var i = period - 1; i < data.length; i++) {
+    if (ema[i - 1].y) {
+      ema[i].y = (data[i].y[3] - ema[i - 1].y) * multiplier + ema[i - 1].y;
+    }
+  }
+  return ema;
+}
+
+function linetocandle(data) {
+  var candledata = [];
+  for (var i = 0; i < data.length; i++) {
+    candledata.push({
+      x: data[i].x,
+      y: [null, null, null, data[i].y]
+    })
+  }
+  return candledata;
+}
+
+function getMACD(data, period1, period2) {
+  var macd = [];
+  var greater = period1 > period2 ? period1 : period2
+  var ema26 = getCandleEMA(data, period1)
+  var ema12 = getCandleEMA(data, period2)
+  for (var i = 0; i < greater; i++) {
+    macd.push({
+      x: data[i].x,
+      y: null
+    })
+  }
+  for (var i = greater; i < data.length; i++) {
+    macd.push({ x: ema26[i].x, y: ema12[i].y - ema26[i].y })
+  }
+  return macd;
+}
+
+
+function getHistogram(data1, data2) {
+  var histData = [];
+  for(var i = 0; i < data1.length;i++){
+    if(data1[i].y !== null && data2[i].y !== null){
+      histData.push({
+        x:data1[i].x,
+        y:data1[i].y - data2[i].y,
+      })
+    } else{
+      histData.push({
+        x: "undefined",
+        y: null
+      })
+    }
+  }
+  return histData
 }
 class Homepage extends React.Component {
 
@@ -103,37 +183,55 @@ class Homepage extends React.Component {
       ticker: '',
       data: null,
       sma: null,
-      sma2: null
-    }
+      sma2: null,
+      macd: null,
+      signal: null,
+      annotations:null,
+    };
   }
 
-  handleChange = (data) => {
-    this.setState({ticker: data.target.value})
-  }
+ 
   handleSubmit = (event) => {
     event.preventDefault()
     var ticker = event.target[0].value;
-    fetch(`/ticker/${ticker}`)
-    .then(res => res.json())
-    .then(data => {
-      this.setState({
-        data: data,
-        sma: getSMA(data, 5),
-        sma2: getSMA(data, 20)
+    var params = {
+      sDate: undefined,
+      eDate: undefined,
+      interval: "5Min",
+      limit: 100,
+    };
+
+    var query = queryString.stringify(params);
+
+    fetch(`/ticker/${ticker}${query !== "" ? "?" + query : ""}`)
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          data: data,
+          sma: getSMA(data, 5),
+          sma2: getSMA(data, 20),
+          macd: getMACD(data, 26, 12),
+          signal: getSMA(linetocandle(getMACD(data, 26, 12)), 9),
+          annotations: getCross()
+        })
       })
-    })
   }
-  
-  render () {
+
+  render() {
     var options = {
       chart: {
         id: "candlestick",
+      },
+      annotations: {
+        xaxis: this.state.annotations,
       },
       yaxis: {
         labels: {
           style: {
             colors: ["#000000"],
           },
+          
+          minWidth: 40
         },
       },
       // xaxis: {
@@ -149,33 +247,94 @@ class Homepage extends React.Component {
     };
     return (
       <div className="App-header">
-        <Search onSubmit={this.handleSubmit}/>
-        <br/>
-        {this.state.data !== null && this.state.sma !== null &&
-        <Chart
-          options={options}
-          series={[
-            {
-              name:"close",
-              type:"candlestick",
-              data: this.state.data
-            },
-            {
-              name:"sma5",
-              type:"line",
-              data: this.state.sma
-            },
-            {
-              name:"sma20",
-              type:"line",
-              data: this.state.sma2
-            }
-          ]}
-          type="line"
-          className="candlestickchart"
-          width="1200px"
-          height="750px"
-        />}
+        <Search onSubmit={this.handleSubmit} />
+        <br />
+        {this.state.data !== null &&
+          this.state.sma !== null && (
+            <div>
+              <Chart
+                options={options}
+                series={[
+                  {
+                    name: "close",
+                    type: "candlestick",
+                    data: this.state.data,
+                  },
+                  {
+                    name: "sma5",
+                    type: "line",
+                    data: this.state.sma,
+                  },
+                  {
+                    name: "sma20",
+                    type: "line",
+                    data: this.state.sma2,
+                  },
+                ]}
+                className="candlestickchart"
+                width="1200px"
+                height="750px"
+              />
+              <br />
+              <Chart
+                options={{
+                  chart: {
+                    group: "combine",
+                    id: "macd",
+                    type: "line",
+                  },
+                  yaxis: {
+                    labels: {
+                      minWidth: 40
+                    }
+                  },
+                  markers: {
+                    size: .5,
+                  },
+                  stroke: {
+                    width: [2, 2],
+                  },
+                  plotOptions: {
+                    bar: {
+                      colors: {
+                        ranges: [{
+                          from: -1000,
+                          to: 0,
+                          color: '#de0408'
+                        }, {
+                          from: 0,
+                          to: 1000,
+                          color: '#1bfa44'
+                        }]
+                      }
+                    }
+                  },
+                  stroke: {
+                    width: [2, 2, 0],
+                  }
+                }}
+                series={[
+                  {
+                    name: "macd",
+                    type: "line",
+                    data: this.state.macd,
+                  },
+                  {
+                    name: "signal",
+                    type: "line",
+                    data: this.state.signal,
+                  },
+                  {
+                    name: "test",
+                    type: "bar",
+                    data: getHistogram(this.state.macd, this.state.signal)
+                  },
+                ]}
+                className="macdchart"
+                height="300px"
+              />
+            </div>
+          )}
       </div>
     );
 
