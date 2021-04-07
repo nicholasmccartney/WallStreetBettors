@@ -4,5 +4,35 @@
 }
 
 .search {
-    background-color: blue;
+    background-color: black;
+    width: 50%;
+    align-items: center;
+    font-size: 15px;
+    margin-left: 5px;
+    padding: 10px;
+   
+}
+
+.input {
+    color: black;
+    
+}
+
+.interval {
+    justify-content: center;
+}
+
+.slider {
+    color: red;
+    width: 20%;
+    background-color: none;
+    
+}
+
+.submit {
+    background-color: none;
+    width: 20%;
+    margin-left: 20px;
+    align-content: center;
+
 }

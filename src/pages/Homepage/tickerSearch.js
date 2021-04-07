@@ -9,8 +9,8 @@ class Search extends React.Component {
     super(props);
     this.state = {
       ticker: "",
-      date1: null,
-      date2: null,
+      startDate: null,
+      endDate: null,
       limit: 100,
     };
   }
@@ -21,15 +21,15 @@ class Search extends React.Component {
     });
   };
 
-  setDate1 = (data) => {
+  setStartDate = (data) => {
     this.setState({
-      date1: data,
+      startDate: data,
     });
   };
 
-  setDate2 = (data) => {
+  setEndDate = (data) => {
     this.setState({
-      date2: data,
+      endDate: data,
     });
   };
 
@@ -43,40 +43,43 @@ class Search extends React.Component {
     //console.log(this.state)
     return (
       <form className="search" onSubmit={this.props.onSubmit}>
-          <input
+          <input className="input"
             type="text"
             placeholder="Search for a stock ticker"
             value={this.state.ticker}
             onChange={this.setTicker}
           />
           
-          <select name="interval" id="1">
+          <select className="interval" id="1">
             <option value="1Min">1Min</option>
             <option value="5Min">5Min</option>
+            <option value="15Min">15Min</option>
             <option value="1Hr">1Hr</option>
           </select>
 
-          <DatePicker selected={this.state.date1} 
-            onChange={this.setDate1} 
+          <DatePicker selected={this.state.startDate} 
+            onChange={this.setStartDate} 
             maxDate= {new Date()} 
             placeholderText="Choose Start Date"/>
 
-          <DatePicker selected={this.state.date2} 
-            onChange={this.setDate2} 
+          <DatePicker selected={this.state.endDate} 
+            onChange={this.setEndDate} 
             maxDate= {new Date()} 
             placeholderText="Choose End Date"/>
 
-          <Slider 
-            min={100}
+          <p>Candle count:</p>
+          <Slider className="slider"
+            min={50}
             max={1000}
             defaultValue={100}
-            steps={10}
+            step={50}
             onChange={this.setLimit}
             marks
+            
             />
             <span>{this.state.limit}</span>
 
-        <input type="submit" value="Submit" />
+        <input type="submit" value="Submit" className="submit" />
       </form>
     );
   }
