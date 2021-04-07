@@ -4,35 +4,44 @@
 }
 
 .search {
-    background-color: black;
+    background-color: #1d2025;
     width: 50%;
     align-items: center;
     font-size: 15px;
-    margin-left: 5px;
     padding: 10px;
-   
+    border-radius: 10px;
+    border: black solid 2px;
+}
+
+.search-cont {
+    margin: 20px;
 }
 
 .input {
     color: black;
-    
+    width: 75%;
 }
 
 .interval {
-    justify-content: center;
+    margin-top: 15px;
 }
 
-.slider {
-    color: red;
-    width: 20%;
-    background-color: none;
-    
+.dates {
+    margin-top: 15px;
 }
 
 .submit {
     background-color: none;
     width: 20%;
-    margin-left: 20px;
+    margin-left: 40%;
     align-content: center;
+}
 
+
+.test {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
 }
