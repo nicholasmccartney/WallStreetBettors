@@ -3,6 +3,8 @@ import "./Homepage.css"
 import { getTickerData } from '../../api/api.js'
 import {series} from "./tempData.js"
 import Search from './tickerSearch.js'
+import React from "react";
+
 
 const queryString = require("query-string")
 var dayjs = require("dayjs");
@@ -142,8 +144,15 @@ class Homepage extends React.Component {
           style: {
             colors: ["#000000"],
           },
+          // The reason for the if else is that sometiems val returns null
+          // This could cause the 'toFixed' (built in round) to fail as its cant round null
+          // which would crash
           formatter: function (val) {
-            return `$${val.toFixed(2)}`;
+            if(val === null){
+              return val;
+            }else{
+              return `$${val.toFixed(2)}`;
+            }
           },
           minWidth: 40
         },
