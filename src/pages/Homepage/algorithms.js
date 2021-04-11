@@ -20,7 +20,6 @@ function getSMA(data, period) {
     }
   }
   var length = arr.length + 1;
-  console.log(length + " " + period);
   for (var i = 0; i < 101 - length; i++) {
     arr.unshift({ x: "undefined", y: null });
   }

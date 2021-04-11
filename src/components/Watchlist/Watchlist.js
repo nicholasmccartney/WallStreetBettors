@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { UserContext } from "../../providers/UserProvider";
-import "./Watchlist.css";
+import "./watchlist.css";
 const queryString = require("query-string");
 
 function getWatchlistTickers(tickers, setWatchlist) {
