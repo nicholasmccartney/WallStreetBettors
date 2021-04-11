@@ -16,6 +16,7 @@ class Homepage extends React.Component {
       sma2: null,
       macd: null,
       signal: null,
+      annotations:null,
     };
   }
 
@@ -45,7 +46,8 @@ class Homepage extends React.Component {
           sma: getSMA(data, 5),
           sma2: getSMA(data, 20),
           macd: getMACD(data,26,12),
-          signal: getSMA(linetocandle(getMACD(data,26,12)),9)
+          signal: getSMA(linetocandle(getMACD(data,26,12)),9),
+          annotations: getCross()
         })
     })
   }
@@ -55,6 +57,9 @@ class Homepage extends React.Component {
       chart: {
         group: "combine",
         id: "candlestick",
+      },
+      annotations: {
+        xaxis: this.state.annotations,
       },
       yaxis: {
         labels: {
