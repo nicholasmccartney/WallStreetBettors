@@ -35,7 +35,7 @@ class Homepage extends React.Component {
   //}
 
   handleSubmit = (event) => {
-    this.setState({signal: null, macd: null, loading: true})
+    this.setState({signal: null, macd: null, loading: true, ticker: event.target[0].value})
     event.preventDefault();
     var ticker = event.target[0].value;
     var interval = event.target[1].value;
@@ -74,6 +74,13 @@ class Homepage extends React.Component {
         id: "candlestick",
         redrawOnParentResize: false,
       },
+      title: {
+        text: this.state.ticker,
+        align: "center",
+        style: {
+          fontSize: '24px',
+        }
+      },
       annotations: {
         xaxis: this.state.annotations,
       },
@@ -108,8 +115,63 @@ class Homepage extends React.Component {
         width: [1, 5, 5],
       },
     };
+
+    var options2 = {
+      chart: {
+        group: "combine",
+        id: "macd",
+        type: "line",
+        redrawOnParentResize: false,
+      },
+      yaxis: {
+        labels: {
+          style: {
+            colors: ["#000000"],
+          },
+          // The reason for the if else is that sometiems val returns null
+          // This could cause the 'toFixed' (built in round) to fail as its cant round null
+          // which would crash
+          formatter: function (val) {
+            if (val === null) {
+              return val;
+            } else {
+              return `${val.toFixed(3)}`;
+            }
+          },
+          minWidth: 40,
+        },
+      },
+      markers: {
+        size: 0.5,
+      },
+      stroke: {
+        width: [2, 2],
+      },
+      plotOptions: {
+        bar: {
+          colors: {
+            ranges: [
+              {
+                from: -1000,
+                to: 0,
+                color: "#de0408",
+              },
+              {
+                from: 0,
+                to: 1000,
+                color: "#1bfa44",
+              },
+            ],
+          },
+        },
+      },
+      stroke: {
+        width: [2, 2, 0],
+      },
+    };
     return (
       <div className="App-header">
+        <br/>
         <Search onSubmit={this.handleSubmit} />
         <br />
         {this.state.loading && (
@@ -151,59 +213,7 @@ class Homepage extends React.Component {
                 height="700"
               />
               <Chart
-                options={{
-                  chart: {
-                    group: "combine",
-                    id: "macd",
-                    type: "line",
-                    redrawOnParentResize: false,
-                  },
-                  yaxis: {
-                    labels: {
-                      style: {
-                        colors: ["#000000"],
-                      },
-                      // The reason for the if else is that sometiems val returns null
-                      // This could cause the 'toFixed' (built in round) to fail as its cant round null
-                      // which would crash
-                      formatter: function (val) {
-                        if (val === null) {
-                          return val;
-                        } else {
-                          return `${val.toFixed(3)}`;
-                        }
-                      },
-                      minWidth: 40,
-                    },
-                  },
-                  markers: {
-                    size: 0.5,
-                  },
-                  stroke: {
-                    width: [2, 2],
-                  },
-                  plotOptions: {
-                    bar: {
-                      colors: {
-                        ranges: [
-                          {
-                            from: -1000,
-                            to: 0,
-                            color: "#de0408",
-                          },
-                          {
-                            from: 0,
-                            to: 1000,
-                            color: "#1bfa44",
-                          },
-                        ],
-                      },
-                    },
-                  },
-                  stroke: {
-                    width: [2, 2, 0],
-                  },
-                }}
+                options={options2}
                 series={[
                   {
                     name: "macd",
