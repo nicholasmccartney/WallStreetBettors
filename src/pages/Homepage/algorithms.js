@@ -23,7 +23,7 @@ function getSMA(data, period) {
     }
   }
   var length = arr.length + 1;
-  for (var i = 0; i < 101 - length; i++) {
+  for (var i = 0; i < data.length + 1 - length; i++) {
     arr.unshift({ x: "undefined", y: null });
   }
   getCross(arr, period);
