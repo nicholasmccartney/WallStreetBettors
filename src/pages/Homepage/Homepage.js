@@ -33,6 +33,7 @@ class Homepage extends React.Component {
   }
 
   handleSubmit = (event) => {
+    this.setState({signal: null, macd: null})
     event.preventDefault();
     var ticker = event.target[0].value;
     var interval = event.target[1].value;
@@ -64,6 +65,8 @@ class Homepage extends React.Component {
   }
   
   render () {
+    console.log(this.state.sma)
+    console.log(this.state.sma2)
     var options = {
       chart: {
         group: "combine",
@@ -74,6 +77,7 @@ class Homepage extends React.Component {
         xaxis: this.state.annotations,
       },
       yaxis: {
+        decimalsInFloat: 2,
         labels: {
           style: {
             colors: ["#000000"],
@@ -89,6 +93,7 @@ class Homepage extends React.Component {
             }
           },
           minWidth: 40,
+          maxWidth: 40,
         },
       },
       tooltip: {
