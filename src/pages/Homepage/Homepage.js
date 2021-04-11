@@ -33,7 +33,7 @@ function getSMA(data, period) {
   }
   var length = arr.length + 1
   console.log(length + " " + period)
-  for (var i = 0; i < 101 - length ; i++) {
+  for (var i = 0; i < data.length + 1 - length ; i++) {
     arr.unshift({ x: "undefined", y: null });
   }
   getCross(arr,period);
@@ -43,6 +43,7 @@ function getSMA(data, period) {
 function getCandleEMA(data, period) {
   var multiplier = 2 / (1 + period);
   var ema = getSMA(data, period);
+  console.log(ema);
   for (var i = period - 1; i < data.length; i++) {
     if (ema[i - 1].y) {
       ema[i].y = (data[i].y[3] - ema[i - 1].y) * multiplier + ema[i - 1].y;
@@ -183,6 +184,7 @@ class Homepage extends React.Component {
   }
 
   handleSubmit = (event) => {
+    this.setState({signal: null, macd: null})
     event.preventDefault();
     var ticker = event.target[0].value;
     var interval = event.target[1].value;
@@ -215,6 +217,8 @@ class Homepage extends React.Component {
   }
   
   render () {
+    console.log(this.state.sma)
+    console.log(this.state.sma2)
     var options = {
       chart: {
         group: "combine",
@@ -224,21 +228,13 @@ class Homepage extends React.Component {
         xaxis: this.state.annotations,
       },
       yaxis: {
+        decimalsInFloat: 2,
         labels: {
           style: {
             colors: ["#000000"],
           },
-          // The reason for the if else is that sometiems val returns null
-          // This could cause the 'toFixed' (built in round) to fail as its cant round null
-          // which would crash
-          formatter: function (val) {
-            if(val === null){
-              return val;
-            }else{
-              return `$${val.toFixed(2)}`;
-            }
-          },
-          minWidth: 40
+          minWidth: 40,
+          maxWidth: 40
         },
       },
       tooltip: {
@@ -257,7 +253,9 @@ class Homepage extends React.Component {
         <Search onSubmit={this.handleSubmit} />
         <br />
         {this.state.data !== null &&
-          this.state.sma !== null && (
+          this.state.sma !== null && 
+          this.state.macd !== null &&
+          this.state.signal !== null && (
             <div>
               <Chart
                 options={options}
@@ -291,9 +289,11 @@ class Homepage extends React.Component {
                     type: "line",
                   },
                   yaxis: {
-                    labels: {
-                      minWidth: 40
-                    }
+                    decimalsInFloat: 2,
+                    labels: { 
+                      minWidth: 40,
+                      maxWidth: 40
+                    },
                   },
                   markers: {
                     size: .5,
