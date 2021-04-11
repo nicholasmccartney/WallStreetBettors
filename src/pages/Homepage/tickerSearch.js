@@ -49,6 +49,7 @@ class Search extends React.Component {
     return (
       <form className="search" onSubmit={this.props.onSubmit}>
         <div className="search-cont">
+          <div className="top-line">
           <input
             className="input"
             type="text"
@@ -63,22 +64,27 @@ class Search extends React.Component {
             <option value="15Min">15Min</option>
             <option value="1D">1Day</option>
           </select>
+          </div>
           <br />
+          <div className="mid-line">
           <DatePicker
-            className="dates"
+            className="start-date"
             selected={this.state.startDate}
             onChange={this.setStartDate}
             maxDate={new Date()}
             placeholderText="Choose Start Date"
+            filterDate = {date => date.getDay() !== 6 && date.getDay() !== 0 }
           />
-          <br />
+          
           <DatePicker
-            className="dates"
+            className="end-date"
             selected={this.state.endDate}
             onChange={this.setEndDate}
             maxDate={new Date()}
             placeholderText="Choose End Date"
+            filterDate = {date => date.getDay() !== 6 && date.getDay() !== 0 }
           />
+          </div>
           <br />
           <br />
           <span>Candle Count: {this.state.limit}</span>
