@@ -76,3 +76,7 @@
     color: black;
     background-color: white;
 }
+
+.chart-container {
+    height: 1000px;
+}

@@ -2,11 +2,14 @@ import Chart from "react-apexcharts";
 import "./Homepage.css"
 import Search from './tickerSearch.js'
 import React from "react";
-import { getSMA, getCandleEMA, linetocandle, getMACD, getHistogram } from './algorithms.js'
+import { getSMA, getCandleEMA, linetocandle, getMACD, getHistogram, getCross } from './algorithms.js'
 
 const queryString = require("query-string")
 
 class Homepage extends React.Component {
+
+  chartsRef = React.createRef();
+
   constructor(props) {
     super(props);
     this.state = {
@@ -18,6 +21,15 @@ class Homepage extends React.Component {
       signal: null,
       annotations:null,
     };
+  }
+
+  componentDidUpdate() {
+    this.scrollToChart()
+  }
+
+  scrollToChart = () => {
+    console.log(this.chartsRef)
+    this.chartsRef.current.scrollIntoView({ behavior: "smooth" });
   }
 
   handleSubmit = (event) => {
@@ -36,7 +48,6 @@ class Homepage extends React.Component {
     };
 
     var query = queryString.stringify(params);
-    console.log(query)
 
     fetch(`/ticker/${ticker}${query !== "" ? "?" + query : ""}`)
     .then(res => res.json())
@@ -57,6 +68,7 @@ class Homepage extends React.Component {
       chart: {
         group: "combine",
         id: "candlestick",
+        redrawOnParentResize: false,
       },
       annotations: {
         xaxis: this.state.annotations,
@@ -70,13 +82,13 @@ class Homepage extends React.Component {
           // This could cause the 'toFixed' (built in round) to fail as its cant round null
           // which would crash
           formatter: function (val) {
-            if(val === null){
+            if (val === null) {
               return val;
-            }else{
+            } else {
               return `$${val.toFixed(2)}`;
             }
           },
-          minWidth: 40
+          minWidth: 40,
         },
       },
       tooltip: {
@@ -84,7 +96,7 @@ class Homepage extends React.Component {
         shared: true,
       },
       markers: {
-        size: .5,
+        size: 0.5,
       },
       stroke: {
         width: [1, 5, 5],
@@ -94,92 +106,107 @@ class Homepage extends React.Component {
       <div className="App-header">
         <Search onSubmit={this.handleSubmit} />
         <br />
-        {this.state.data !== null &&
-          this.state.sma !== null && (
-            <div>
-              <Chart
-                options={options}
-                series={[
-                  {
-                    name: "close",
-                    type: "candlestick",
-                    data: this.state.data,
+        {this.state.data !== null && this.state.sma !== null && (
+          <div className="chart-container" ref={this.chartsRef}>
+            <Chart
+              options={options}
+              series={[
+                {
+                  name: "candle",
+                  type: "candlestick",
+                  data: this.state.data,
+                },
+                {
+                  name: "sma5",
+                  type: "line",
+                  data: this.state.sma,
+                },
+                {
+                  name: "sma20",
+                  type: "line",
+                  data: this.state.sma2,
+                },
+              ]}
+              className="candlestickchart"
+              width="1200px"
+              height="700"
+            />
+            <Chart
+              options={{
+                chart: {
+                  group: "combine",
+                  id: "macd",
+                  type: "line",
+                  redrawOnParentResize: false,
+                },
+                yaxis: {
+                  labels: {
+                    style: {
+                      colors: ["#000000"],
+                    },
+                    // The reason for the if else is that sometiems val returns null
+                    // This could cause the 'toFixed' (built in round) to fail as its cant round null
+                    // which would crash
+                    formatter: function (val) {
+                      if (val === null) {
+                        return val;
+                      } else {
+                        return `${val.toFixed(3)}`;
+                      }
+                    },
+                    minWidth: 40,
                   },
-                  {
-                    name: "sma5",
-                    type: "line",
-                    data: this.state.sma,
-                  },
-                  {
-                    name: "sma20",
-                    type: "line",
-                    data: this.state.sma2,
-                  },
-                ]}
-                className="candlestickchart"
-                width="1200px"
-                height="750px"
-              />
-              <br />
-              <Chart
-                options={{
-                  chart: {
-                    group: "combine",
-                    id: "macd",
-                    type: "line",
-                  },
-                  yaxis: {
-                    labels: {
-                      minWidth: 40
-                    }
-                  },
-                  markers: {
-                    size: .5,
-                  },
-                  stroke: {
-                    width: [2,2],
-                  },
-                  plotOptions: {
-                    bar: {
-                      colors: {
-                        ranges: [{
+                },
+                markers: {
+                  size: 0.5,
+                },
+                stroke: {
+                  width: [2, 2],
+                },
+                plotOptions: {
+                  bar: {
+                    colors: {
+                      ranges: [
+                        {
                           from: -1000,
                           to: 0,
-                          color: '#de0408'
-                        }, {
+                          color: "#de0408",
+                        },
+                        {
                           from: 0,
                           to: 1000,
-                          color: '#1bfa44'
-                        }]
-                      }
-                    }
+                          color: "#1bfa44",
+                        },
+                      ],
+                    },
                   },
-                  stroke: {
-                    width: [2,2,0],
-                  }
-                }}
-                series={[
-                  {
-                    name: "macd",
-                    type: "line",
-                    data: this.state.macd,
-                  },
-                  {
-                    name: "signal",
-                    type: "line",
-                    data: this.state.signal,
-                  },
-                  {
-                    name:"test",
-                    type: "bar",
-                    data: getHistogram(this.state.macd, this.state.signal)
-                  },
-                ]}
-                className = "macdchart"
-                height = "300px"
-              />
-            </div>
-          )}
+                },
+                stroke: {
+                  width: [2, 2, 0],
+                },
+              }}
+              series={[
+                {
+                  name: "macd",
+                  type: "line",
+                  data: this.state.macd,
+                },
+                {
+                  name: "signal",
+                  type: "line",
+                  data: this.state.signal,
+                },
+                {
+                  name: "test",
+                  type: "bar",
+                  data: getHistogram(this.state.macd, this.state.signal),
+                },
+              ]}
+              className="macdchart"
+              height="200px"
+            />
+          </div>
+        )}
       </div>
     );
   }
