@@ -1,5 +1,4 @@
 var express = require("express");
-var bodyParser = require("body-parser");
 var cors = require("cors");
 var app = express();
 
@@ -67,6 +66,36 @@ app.get("/ticker/:id", (req, res) => {
       console.log(formattedData)
       res.json(formattedData);
     });
+});
+
+app.get("/watchlist", (req, res) => {
+  let parsedUrl = url.parse(req.originalUrl);
+  let parsedQs = querystring.parse(parsedUrl.query);
+  let tickers = parsedQs.tickers
+  let tickersList = tickers.split(',').map(x=>x)
+  var formattedData = []
+  alpaca.getBars("1Min", tickers, {
+    limit: 1
+  }).then((data) => {
+    tickersList.map((ticker) => {
+      let tData = data[ticker][0]
+      formattedData.push({
+        ticker: ticker,
+        price: tData.closePrice,
+        delta: tData.closePrice - tData.openPrice
+      });
+    });
+    console.log(formattedData)
+    res.json(formattedData)
+  });
+});
+
+app.get("/marketStatus", (req, res) =>  {
+  alpaca 
+    .getClock()
+    .then((clock) => {
+      res.json(clock);
+    })
 });
 
 app.listen(3001, () => {

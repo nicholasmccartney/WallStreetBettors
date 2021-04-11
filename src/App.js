@@ -4,6 +4,7 @@ import Homepage from './pages/Homepage/Homepage'
 import Account from './pages/Account/Account'
 import './App.css';
 import Topbar from './components/TopBar/Topbar.js'
+import UserProvider from './providers/UserProvider'
 
 class App extends React.Component {
 
@@ -14,20 +15,22 @@ class App extends React.Component {
   render() {
 
     return (
-      <Router>
-        <div className="App">
-          <Topbar />
-        </div>
+      <UserProvider>
+        <Router>
+          <div className="App">
+            <Topbar />
+          </div>
 
-        <Switch>
-          <Route path='/account'>
-            <Account/>
-          </Route>
-          <Route path='/'>
-            <Homepage/>
-          </Route>
-        </Switch>
-      </Router>
+          <Switch>
+            <Route path='/account'>
+              <Account/>
+            </Route>
+            <Route path='/'>
+              <Homepage/>
+            </Route>
+          </Switch>
+        </Router>
+      </UserProvider>
     );
   }
 
