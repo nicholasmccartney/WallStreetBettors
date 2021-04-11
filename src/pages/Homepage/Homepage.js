@@ -108,14 +108,20 @@ class Homepage extends React.Component {
   handleSubmit = (event) => {
     event.preventDefault();
     var ticker = event.target[0].value;
+    var interval = event.target[1].value;
+    var sDate = event.target[2].value;
+    var eDate = event.target[3].value;
+    var limit = event.target[4].value;
+
     var params = {
-      sDate: undefined,
-      eDate: undefined,
-      interval: "5Min",
-      limit: 100,
+      sDate: sDate !== "" ? sDate : undefined,
+      eDate: eDate !== "" ? eDate : undefined,
+      interval: interval,
+      limit: limit,
     };
 
     var query = queryString.stringify(params);
+    console.log(query)
 
     fetch(`/ticker/${ticker}${query !== "" ? "?" + query : ""}`)
     .then(res => res.json())

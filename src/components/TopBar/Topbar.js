@@ -3,8 +3,7 @@ import './topbar.css'
 import logoSVG from "../../assets/logo_full_blue.svg";
 import { Link } from "react-router-dom";
 import Timer from "../Timer/Timer.js";
-import AccountManager from '../AccountManager/AccountManager.js';
-import Watchlist from "../Watchlist/Watchlist.js"
+import AccountLink from "../AccountLink/AccountLink.js";
 
 class Topbar extends React.Component {
   constructor(props) {
@@ -54,12 +53,11 @@ class Topbar extends React.Component {
             </div>
             <AccountManager />
           </div>
-          <div>
-            <div
-              className={
-                this.state.is_open ? "marketStatus-open" : "marketStatus-closed"
-              }
-            >
+          <div
+            className={
+              this.state.is_open ? "marketStatus-open" : "marketStatus-closed"
+            }
+          >
               {this.marketStatus()}
               <Timer
                 compareDate={
@@ -71,7 +69,6 @@ class Topbar extends React.Component {
               />
             </div>
             <Watchlist />
-          </div>
         </div>
       );
     } else {
