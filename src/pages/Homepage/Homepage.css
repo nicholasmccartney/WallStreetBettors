@@ -80,3 +80,8 @@
 .chart-container {
     height: 1000px;
 }
+
+.loaders {
+    display: flex;
+    flex-direction: row;
+}

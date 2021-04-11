@@ -3,12 +3,13 @@ import "./Homepage.css"
 import Search from './tickerSearch.js'
 import React from "react";
 import { getSMA, getCandleEMA, linetocandle, getMACD, getHistogram, getCross } from './algorithms.js'
+import { BounceLoader as Loader } from "react-spinners";
 
 const queryString = require("query-string")
+const chartsRef = React.createRef();
 
 class Homepage extends React.Component {
 
-  chartsRef = React.createRef();
 
   constructor(props) {
     super(props);
@@ -20,20 +21,21 @@ class Homepage extends React.Component {
       macd: null,
       signal: null,
       annotations:null,
+      loading: false,
     };
   }
 
-  componentDidUpdate() {
-    this.scrollToChart()
-  }
-
-  scrollToChart = () => {
-    console.log(this.chartsRef)
-    this.chartsRef.current.scrollIntoView({ behavior: "smooth" });
-  }
+  //componentDidUpdate() {
+  //  this.scrollToChart()
+  //}
+//
+  //scrollToChart = () => {
+  //  console.log(chartsRef)
+  //  //chartsRef.current.scrollIntoView({ behavior: "smooth" });
+  //}
 
   handleSubmit = (event) => {
-    this.setState({signal: null, macd: null})
+    this.setState({signal: null, macd: null, loading: true})
     event.preventDefault();
     var ticker = event.target[0].value;
     var interval = event.target[1].value;
@@ -59,14 +61,13 @@ class Homepage extends React.Component {
           sma2: getSMA(data, 20),
           macd: getMACD(data,26,12),
           signal: getSMA(linetocandle(getMACD(data,26,12)),9),
-          annotations: getCross()
+          annotations: getCross(),
+          loading: false,
         })
     })
   }
   
   render () {
-    console.log(this.state.sma)
-    console.log(this.state.sma2)
     var options = {
       chart: {
         group: "combine",
@@ -111,107 +112,120 @@ class Homepage extends React.Component {
       <div className="App-header">
         <Search onSubmit={this.handleSubmit} />
         <br />
-        {this.state.data !== null && this.state.sma !== null && (
-          <div className="chart-container" ref={this.chartsRef}>
-            <Chart
-              options={options}
-              series={[
-                {
-                  name: "candle",
-                  type: "candlestick",
-                  data: this.state.data,
-                },
-                {
-                  name: "sma5",
-                  type: "line",
-                  data: this.state.sma,
-                },
-                {
-                  name: "sma20",
-                  type: "line",
-                  data: this.state.sma2,
-                },
-              ]}
-              className="candlestickchart"
-              width="1200px"
-              height="700"
-            />
-            <Chart
-              options={{
-                chart: {
-                  group: "combine",
-                  id: "macd",
-                  type: "line",
-                  redrawOnParentResize: false,
-                },
-                yaxis: {
-                  labels: {
-                    style: {
-                      colors: ["#000000"],
-                    },
-                    // The reason for the if else is that sometiems val returns null
-                    // This could cause the 'toFixed' (built in round) to fail as its cant round null
-                    // which would crash
-                    formatter: function (val) {
-                      if (val === null) {
-                        return val;
-                      } else {
-                        return `${val.toFixed(3)}`;
-                      }
-                    },
-                    minWidth: 40,
-                  },
-                },
-                markers: {
-                  size: 0.5,
-                },
-                stroke: {
-                  width: [2, 2],
-                },
-                plotOptions: {
-                  bar: {
-                    colors: {
-                      ranges: [
-                        {
-                          from: -1000,
-                          to: 0,
-                          color: "#de0408",
-                        },
-                        {
-                          from: 0,
-                          to: 1000,
-                          color: "#1bfa44",
-                        },
-                      ],
-                    },
-                  },
-                },
-                stroke: {
-                  width: [2, 2, 0],
-                },
-              }}
-              series={[
-                {
-                  name: "macd",
-                  type: "line",
-                  data: this.state.macd,
-                },
-                {
-                  name: "signal",
-                  type: "line",
-                  data: this.state.signal,
-                },
-                {
-                  name: "test",
-                  type: "bar",
-                  data: getHistogram(this.state.macd, this.state.signal),
-                },
-              ]}
-              className="macdchart"
-              height="200px"
-            />
+        {this.state.loading && (
+          <div>
+            <div className="loaders">
+              <Loader size={25} margin={2} color={"red"} />
+              <Loader size={50} margin={2} />
+              <Loader size={25} margin={2} color="white" />
+            </div>
+            Loading...
           </div>
         )}
+        {this.state.data !== null &&
+          this.state.sma !== null &&
+          this.state.macd !== null &&
+          this.state.signal !== null && (
+            <div className="chart-container" ref={chartsRef}>
+              <Chart
+                options={options}
+                series={[
+                  {
+                    name: "candle",
+                    type: "candlestick",
+                    data: this.state.data,
+                  },
+                  {
+                    name: "sma5",
+                    type: "line",
+                    data: this.state.sma,
+                  },
+                  {
+                    name: "sma20",
+                    type: "line",
+                    data: this.state.sma2,
+                  },
+                ]}
+                className="candlestickchart"
+                width="1200px"
+                height="700"
+              />
+              <Chart
+                options={{
+                  chart: {
+                    group: "combine",
+                    id: "macd",
+                    type: "line",
+                    redrawOnParentResize: false,
+                  },
+                  yaxis: {
+                    labels: {
+                      style: {
+                        colors: ["#000000"],
+                      },
+                      // The reason for the if else is that sometiems val returns null
+                      // This could cause the 'toFixed' (built in round) to fail as its cant round null
+                      // which would crash
+                      formatter: function (val) {
+                        if (val === null) {
+                          return val;
+                        } else {
+                          return `${val.toFixed(3)}`;
+                        }
+                      },
+                      minWidth: 40,
+                    },
+                  },
+                  markers: {
+                    size: 0.5,
+                  },
+                  stroke: {
+                    width: [2, 2],
+                  },
+                  plotOptions: {
+                    bar: {
+                      colors: {
+                        ranges: [
+                          {
+                            from: -1000,
+                            to: 0,
+                            color: "#de0408",
+                          },
+                          {
+                            from: 0,
+                            to: 1000,
+                            color: "#1bfa44",
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  stroke: {
+                    width: [2, 2, 0],
+                  },
+                }}
+                series={[
+                  {
+                    name: "macd",
+                    type: "line",
+                    data: this.state.macd,
+                  },
+                  {
+                    name: "signal",
+                    type: "line",
+                    data: this.state.signal,
+                  },
+                  {
+                    name: "test",
+                    type: "bar",
+                    data: getHistogram(this.state.macd, this.state.signal),
+                  },
+                ]}
+                className="macdchart"
+                height="200px"
+              />
+            </div>
+          )}
       </div>
     );
   }
