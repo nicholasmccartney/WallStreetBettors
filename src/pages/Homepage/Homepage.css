@@ -2,6 +2,76 @@
     color: black;
     background-color: white;
 }
+
+.search {
+    background-color: #1d2025;
+    width: 50%;
+    align-items: center;
+    font-size: 18px;
+    padding: 5px;
+    border-radius: 10px;
+    border: black solid 2px;
+}
+
+.search-cont {
+    margin: 20px;
+}
+
+.input {
+    color: black;
+    width: 50%;
+    font-size: 18px;
+}
+
+.interval {
+    margin-top: 15px;
+    margin-left: 5%;
+    font-size: 20px;
+}
+
+.start-date {
+    margin-top: 17px;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.end-date {
+    margin-top: 17px;
+    margin-left: 15%;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.submit {
+    background-color: none;
+    width: 20%;
+    margin-left: 39%;
+    align-content: center;
+    margin-top: 5%;
+}
+
+/*search input and time interval*/
+.top-line {
+    display: flex;
+    margin-left: 20%;
+    margin-right: 10%;
+    
+}
+
+/*start date and end date*/
+.mid-line {
+    display: flex;
+    margin-left: 17%;
+    margin-right: 13%;
+}
+
+.test {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
 .macdchart {
     color: black;
     background-color: white;
