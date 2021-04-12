@@ -50,7 +50,7 @@ export default function SignUp(props) {
     <Popup
       trigger={
         <button>
-          No Account? Sign Up Here!
+          No Account?
         </button>
       }
       modal
@@ -101,6 +101,8 @@ export default function SignUp(props) {
                   <br />
                 </div>
               )}
+                  </div>
+                  <br/>
               <button
                 onClick={(event) => {
                   createUserWithEmailAndPasswordHandler(event, email, password);
@@ -108,7 +110,6 @@ export default function SignUp(props) {
               >
                 Sign Up
               </button>
-            </div>
           </form>
         </div>
       )}

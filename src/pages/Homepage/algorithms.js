@@ -98,8 +98,8 @@ function getCross(arr, period) {
 
   // setting the universal array variables to sma5, and sma20 equal to
   // their respective calls
-  if (period === 5) sma5 = arr;
-  if (period === 20) sma20 = arr;
+  if (period === 20) sma5 = arr;
+  if (period === 50) sma20 = arr;
 
   // will iterate through the length of the sma20 array (all of the data points)
   for (var i = 0; i < sma20.length; i++) {

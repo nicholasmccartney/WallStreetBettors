@@ -63,18 +63,22 @@ function Account() {
     return (
       <div className="App-header">
         {!edit && (
-          <div className="account-content">
-            <img
-              src={user && photoURL ? photoURL : avatar}
-              alt="avatar"
-              height="200"
-              width="200"
-            ></img>
-            <div>
-              <p>{displayName}</p>
-              <p>{user.email}</p>
+          <div className="page">
+            <div className="account-info">
+              <img
+                src={user && photoURL ? photoURL : avatar}
+                alt="avatar"
+                height="200"
+                width="200"
+                className="avi"
+              ></img>
+              <div className="content">
+                <p>{displayName}</p>
+                <p>{user.email}</p>
+                <p>{user.watchlist}</p>
+              </div>
+              <br />
             </div>
-            <br />
             <button onClick={editAccount}>Edit Account</button>
           </div>
         )}
@@ -106,7 +110,14 @@ function Account() {
                 <label htmlFor="watchlist">
                   Watchlist (comma separated list):
                 </label>
-                <input type="text" name="watchlist" value={watchlist} placeholder="E.g: GME,MO,F,AMC,SPY,VOO,TRVG" id="watchlist" onChange={onChangeHandler}></input>
+                <input
+                  type="text"
+                  name="watchlist"
+                  value={watchlist}
+                  placeholder="E.g: GME,MO,F,AMC,SPY,VOO,TRVG"
+                  id="watchlist"
+                  onChange={onChangeHandler}
+                ></input>
                 <br />
                 <button onClick={saveAccount}>Save Changes</button>
               </div>

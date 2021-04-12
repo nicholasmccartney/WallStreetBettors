@@ -23,6 +23,9 @@
 }
 
 .form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding-top: 10%;
   color: white; 
   width: 65%;

@@ -57,8 +57,8 @@ class Homepage extends React.Component {
     .then(data => {
       this.setState({
           data: data,
-          sma: getSMA(data, 5),
-          sma2: getSMA(data, 20),
+          sma: getSMA(data, 20),
+          sma2: getSMA(data, 50),
           macd: getMACD(data,26,12),
           signal: getSMA(linetocandle(getMACD(data,26,12)),9),
           annotations: getCross(),
@@ -180,12 +180,12 @@ class Homepage extends React.Component {
                     data: this.state.data,
                   },
                   {
-                    name: "sma5",
+                    name: "sma20",
                     type: "line",
                     data: this.state.sma,
                   },
                   {
-                    name: "sma20",
+                    name: "sma50",
                     type: "line",
                     data: this.state.sma2,
                   },
@@ -208,7 +208,7 @@ class Homepage extends React.Component {
                     data: this.state.signal,
                   },
                   {
-                    name: "test",
+                    name: "hist",
                     type: "bar",
                     data: getHistogram(this.state.macd, this.state.signal),
                   },
