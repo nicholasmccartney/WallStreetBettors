@@ -48,7 +48,8 @@ class Topbar extends React.Component {
             <div className="links">
               <Link to="/">
               </Link>
-              <Link to="/strategies">
+              <Link to="/devPage">
+                dev
               </Link>
             </div>
             <AccountManager />

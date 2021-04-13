@@ -55,6 +55,7 @@ class Homepage extends React.Component {
     fetch(`/ticker/${ticker}${query !== "" ? "?" + query : ""}`)
     .then(res => res.json())
     .then(data => {
+      console.log(data)
       this.setState({
           data: data,
           sma: getSMA(data, 20),
@@ -151,6 +152,7 @@ class Homepage extends React.Component {
         width: [2, 2, 0],
       },
     };
+    console.log(this.state.data)
     return (
       <div className="App-header">
         <br/>

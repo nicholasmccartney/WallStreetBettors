@@ -6,6 +6,8 @@ import Strategies from './pages/Strategies/Strategies.js'
 import './App.css';
 import Topbar from './components/TopBar/Topbar.js'
 import UserProvider from './providers/UserProvider'
+import DevPage from './pages/DevPage/DevPage.js'
+
 
 class App extends React.Component {
 
@@ -28,6 +30,9 @@ class App extends React.Component {
             </Route>
             <Route path='/strategies'>
               <Strategies/>
+            </Route>
+            <Route path='/devpage'>
+              <DevPage id="dev"/>
             </Route>
             <Route path='/'>
               <Homepage/>

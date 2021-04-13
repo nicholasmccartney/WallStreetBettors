@@ -98,6 +98,39 @@ app.get("/marketStatus", (req, res) =>  {
     })
 });
 
+app.get("/tickerDev/:id", (req, res) => {
+  let parsedUrl = url.parse(req.originalUrl);
+  let parsedQs = querystring.parse(parsedUrl.query);
+  console.log(parsedUrl);
+  console.log(parsedQs);
+  var ticker = req.params.id;
+  var limit = parsedQs.limit ? parsedQs.limit : "1000";
+  var interval = parsedQs.interval ? parsedQs.interval : "1Min";
+  var eDate = parsedQs.eDate ? new Date(parsedQs.eDate) : null;
+  var sDate = parsedQs.sDate ? new Date(parsedQs.sDate) : null;
+  var formattedData = [];
+
+  alpaca
+    .getBars(interval, ticker, {
+      start: sDate,
+      end: eDate,
+      limit: limit,
+    })
+    .then((data) => {
+      data[ticker].map((candle) => {
+        formattedData.push({
+          time: candle["startEpochTime"],
+          open: candle["openPrice"],
+          high: candle["highPrice"],
+          low: candle["lowPrice"],
+          close: candle["closePrice"],
+        });
+      });
+      console.log(formattedData);
+      res.json(formattedData);
+    });
+}) 
+
 app.listen(3001, () => {
   console.log("Express server running on localhost:3001");
 });
