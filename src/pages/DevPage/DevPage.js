@@ -1,84 +1,18 @@
-import { createChart } from "lightweight-charts";
 import React, { useState } from "react";
-import { makeChart, updateChartData, addSMALine, clearSMA } from "./Chart";
+import Widget from "./Widget"
+import TradingViewWidget, {Themes} from "react-tradingview-widget";
+import TradingPanel from "./TradingPanel"
 
-const queryString = require("query-string");
-var dayjs = require("dayjs");
 
-class DevPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ticker: "SPY",
-      chartRef: React.createRef(),
-      data: null,
-      chart: false,
-    };
-  }
+export default function DevPage() {
 
-  getSPY = () => {
-    var params = {
-      sDate: undefined,
-      eDate: undefined,
-      interval: "5Min",
-      limit: 1000,
-    };
 
-    var query = queryString.stringify(params);
 
-    fetch(`/tickerDev/SPY${query !== "" ? "?" + query : ""}`)
-      .then((res) => res.json())
-      .then((data) => {
-        this.setState({data: data})
-        if (!this.state.chart) {
-          makeChart(data, this.state.chartRef)
-          this.setState({chart: true})
-        } else {
-          updateChartData(data);
-        }
-      });
-  };
-
-  getGME = () => {
-    var params = {
-      sDate: undefined,
-      eDate: undefined,
-      interval: "5Min",
-      limit: 1000,
-    };
-
-    var query = queryString.stringify(params);
-
-    fetch(`/tickerDev/GME${query !== "" ? "?" + query : ""}`)
-      .then((res) => res.json())
-      .then((data) => {
-        this.setState({ data: data, chart: true });
-        if (!this.state.chart) {
-          makeChart(data, this.state.chartRef);
-          this.setState({chart: true})
-        }
-        else updateChartData(data);
-      });
-  }
-
-  sma = (e) => {
-    addSMALine(e.target.value)
-  }
-
-  render() {
-    return (
-      <div className="App-header">
-        Dev
-        <button onClick={this.getSPY}>Get SPY</button>
-        <button onClick={this.getGME}>Get GME</button>
-        <button value={50} onClick={this.sma}>SMA 50</button>
-        <button value={200} onClick={this.sma}>SMA 200</button>
-        <button onClick={clearSMA}>Clear SMA</button>
-        <div ref={this.state.chartRef}>
-        </div>
-      </div>
-    );
-  }
+  return (
+    <div className="App-header">
+      <br/>
+      <TradingViewWidget symbol="BTCUSD" theme={Themes.DARK} studies={[]} interval={5}/>
+      <TradingPanel/>
+    </div>
+  );
 }
-
-export default DevPage;

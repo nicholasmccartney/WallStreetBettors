@@ -5,23 +5,12 @@ var app = express();
 const url = require("url");
 const querystring = require("querystring");
 const Alpaca = require("@alpacahq/alpaca-trade-api");
+const axios = require('axios')
 
 require("dotenv").config();
 var dayjs = require("dayjs");
 
-const intervals = {
-  "1Min": 60000,
-  "5Min": 300000,
-  "15Min": 900000,
-  "1D": 86400000,
-};
-
-// convert date to unix Math.floor(eDate.getTime() / 1000)
-// to find number of candles that will be returned, subract sDate from eDate, divide by 1000, divide by interval = # of candles
-// if above 1000, need to make multiple requests
-// 
-
-
+const strategies = []
 
 // setting constants for alpaca to use down below if needed
 const alpaca = new Alpaca({
@@ -30,6 +19,59 @@ const alpaca = new Alpaca({
   paper: true,
   usePolygon: false,
 });
+
+const alpacaV2 = axios.create({
+  baseURL: "https://data.alpaca.markets/v2",
+  headers: {
+    "APCA-API-KEY-ID": "AKBEZOXNBF3AM560AA2G",
+    "APCA-API-SECRET-KEY": "M9fx3FNwyHclSWcrcZudKHMgp6Gc8FiYTUspF5Pg",
+  },
+});
+
+const binance = axios.create({
+  baseURL: "https://api.binance.us/api/v3",
+});
+
+const intervals = {
+  "1m": 60000,
+  "5m": 300000,
+  "15Min": 900000,
+  "1D": 86400000,
+};
+
+function initiateStrategy(ticker, interval, type) {
+  if (type === "crypto") {
+    var params = {
+      symbol: ticker,
+      interval: interval,
+      limit: 1000
+    };
+    var query = querystring.stringify(params);
+    binance.get(`/klines${query !== "" ? "?" + query : ""}`)
+    .then(data => {
+      strategies.push(
+        setInterval(SMA2050Stragey, 1000, ticker, interval, type)
+      )
+    })
+    .catch(e => console.log(e));
+  }
+}
+
+function SMA2050Stragey(ticker, interval, type) {
+  if (type==="crypto"){
+    var params = {
+      symbol: ticker,
+      interval: interval,
+      limit: 1,
+    };
+    var query = querystring.stringify(params);
+    binance.get(`/klines${query !== "" ? "?" + query : ""}`)
+    .then(data => {
+      console.log(data['data'])
+    });
+  }
+
+}
 
 app.use(cors());
 
@@ -130,6 +172,56 @@ app.get("/tickerDev/:id", (req, res) => {
       res.json(formattedData);
     });
 }) 
+
+app.get("/tickerDevV2/:id", (req, res) => {
+  let parsedUrl = url.parse(req.originalUrl);
+  let parsedQs = querystring.parse(parsedUrl.query);
+
+  console.log(parsedQs)
+
+  var ticker = req.params.id;
+  var limit = parsedQs.limit ? parsedQs.limit : "1000";
+  var timeframe = parsedQs.interval ? parsedQs.interval : "1Min";
+  var eDate = dayjs('2021-04-12').format();
+  var sDate = dayjs('2017-01-01').format();
+
+  var params = {
+    limit: limit,
+    timeframe: timeframe,
+    start: sDate,
+    end: eDate
+  }
+
+  var formattedData = [];
+
+  ///v2/stocks/{symbol}/bars
+  //axios.get(`https://data.alpaca.markets/v2/${ticker}/bars${parsedUrl}`, {
+  //  headers: {
+  //    "APCA-API-KEY-ID": "AKBEZOXNBF3AM560AA2G",
+  //    "APCA-API-SECRET-KEY": "M9fx3FNwyHclSWcrcZudKHMgp6Gc8FiYTUspF5Pg",
+  //  },
+  //})
+  //.then(res => res.json())
+  //.then(data => {
+  //  console.log(data)
+  //});
+
+  alpacaV2
+    .get(`/stocks/${ticker}/bars`, {
+      params: params,
+    })
+    .then((data) => {
+      res.json(data['data'])
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+
+})
+
+app.get("/strategy", (req, res) => {
+  initiateStrategy("DOGEUSD", "5m", "crypto");
+})
 
 app.listen(3001, () => {
   console.log("Express server running on localhost:3001");
