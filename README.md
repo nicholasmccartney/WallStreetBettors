@@ -66,7 +66,7 @@ Alpaca Credentials can be found through your personal Alpaca API account. Fireba
 
 ### Demo Video
 
-
+https://www.youtube.com/watch?v=N9yZDkcDHKE
 
 
 
