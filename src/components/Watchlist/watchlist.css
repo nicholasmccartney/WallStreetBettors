@@ -1,0 +1,15 @@
+.watchlist-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 3px;
+    background-color: black;
+}
+
+.positive {
+    color: green
+}
+
+.negative {
+    color: red;
+}

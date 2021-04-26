@@ -1,15 +1,11 @@
 import React from 'react'
 import './topbar.css'
-import logo from "../../assets/ez_trade_logo.png"
-import avatar from "../../assets/default_avatar.png";
+import logoSVG from "../../assets/logo_full_blue.svg";
 import { Link } from "react-router-dom";
-import {
-  checkIfOpen,
-  checkWhenOpenedToday,
-  printAccountInfo,
-} from "../../api/api.js";
 import Timer from "../Timer/Timer.js";
 import AccountLink from "../AccountLink/AccountLink.js";
+import AccountManager from "../AccountManager/AccountManager.js"
+import Watchlist from "../Watchlist/Watchlist.js"
 
 class Topbar extends React.Component {
   constructor(props) {
@@ -17,14 +13,9 @@ class Topbar extends React.Component {
     this.state = {
       loading: false,
       loggedIn: false,
-      user: null
+      user: null,
     };
   }
-
-  setFetchedData = (data) => {
-    this.setState(data);
-    this.setState({ loading: false });
-  };
 
   marketStatus = () => {
     if (this.state.is_open) {
@@ -35,11 +26,15 @@ class Topbar extends React.Component {
   };
 
   getMarketStatus = () => {
-    checkIfOpen(this.setFetchedData);
-  }
+    fetch("/marketStatus")
+      .then((res) => res.json())
+      .then((data) => {
+        this.setState({ ...data });
+      });
+  };
 
   componentDidMount() {
-    this.getMarketStatus()
+    this.getMarketStatus();
   }
 
   render() {
@@ -48,9 +43,15 @@ class Topbar extends React.Component {
         <div>
           <div className="container">
             <Link to="/">
-              <img src={logo} alt="logo" height="50" width="75"></img>
+              <img src={logoSVG} alt="logo" height="50" width="75"></img>
             </Link>
-            
+            <div className="links">
+              <Link to="/">
+              </Link>
+              <Link to="/strategies">
+              </Link>
+            </div>
+            <AccountManager />
           </div>
           <div
             className={
@@ -67,12 +68,11 @@ class Topbar extends React.Component {
               resetTimer={this.getMarketStatus}
             />
           </div>
+          <Watchlist />
         </div>
       );
     } else {
-      return (
-        null
-      )
+      return null;
     }
   }
 }

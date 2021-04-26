@@ -1,98 +1,16 @@
-import React from "react";
 import Chart from "react-apexcharts";
-import "./Homepage.css";
-import { getTickerData } from "../../api/api.js";
-import { series } from "./tempData.js";
-import Search from "./tickerSearch.js";
-import axios from "axios";
+import "./Homepage.css"
+import Search from './tickerSearch.js'
+import React from "react";
+import { getSMA, getCandleEMA, linetocandle, getMACD, getHistogram, getCross } from './algorithms.js'
+import { BounceLoader as Loader } from "react-spinners";
 
-function getSMA(data, period) {
-  var arr = [];
-  var value = 0;
-  for (var i = 0; i <= data.length - period; i++) {
-    if (arr[i - 1]) {
-      arr.push({
-        x: data[i + period - 1].x,
-        y:
-          (arr[i - 1].y * period -
-            data[i - 1].y[3] +
-            data[i + period - 1].y[3]) /
-          period,
-      });
-    } else if(data[i].y[3] !== null) {
-      for (var j = i; j < i + period; j++) {
-        value += data[j].y[3];
-      }
-      arr.push({ x: data[i + period - 1].x, y: value / period });
-      value = 0;
-    }
-  }
-  var length = arr.length + 1
-  console.log(length + " " + period)
-  for (var i = 0; i < 101 - length ; i++) {
-    arr.unshift({ x: "undefined", y: null });
-  }
-  return arr;
-}
-
-function getCandleEMA(data, period) {
-  var multiplier = 2 / (1 + period);
-  var ema = getSMA(data, period);
-  for (var i = period - 1; i < data.length; i++) {
-    if (ema[i - 1].y) {
-      ema[i].y = (data[i].y[3] - ema[i - 1].y) * multiplier + ema[i - 1].y;
-    }
-  }
-  return ema;
-}
-
-function linetocandle(data){
-  var candledata = [];
-  for(var i = 0; i <data.length; i++){
-    candledata.push({
-      x: data[i].x,
-      y: [null,null,null,data[i].y]
-    })
-  }
-  return candledata;
-}
-
-function getMACD(data, period1, period2){
-  var macd = [];
-  var greater = period1 > period2 ? period1 : period2
-  var ema26 = getCandleEMA(data,period1)
-  var ema12 = getCandleEMA(data,period2)
-  for(var i = 0; i < greater; i++){
-    macd.push({
-      x:data[i].x,
-      y:null
-    })
-  }
-  for(var i = greater; i < data.length; i++){
-    macd.push({x:ema26[i].x,y:ema12[i].y - ema26[i].y})
-  }
-  return macd;
-}
-
-function getHistogram(data1, data2) {
-  var histData = [];
-  for(var i = 0; i < data1.length;i++){
-    if(data1[i].y !== null && data2[i].y !== null){
-      histData.push({
-        x:data1[i].x,
-        y:data1[i].y - data2[i].y,
-      })
-    } else{
-      histData.push({
-        x: "undefined",
-        y: null
-      })
-    }
-  }
-  return histData
-}
+const queryString = require("query-string")
+const chartsRef = React.createRef();
 
 class Homepage extends React.Component {
+
+
   constructor(props) {
     super(props);
     this.state = {
@@ -102,40 +20,78 @@ class Homepage extends React.Component {
       sma2: null,
       macd: null,
       signal: null,
+      annotations:null,
+      loading: false,
     };
   }
 
-  handleChange = (data) => {
-    this.setState({ ticker: data.target.value });
-  };
+  //componentDidUpdate() {
+  //  this.scrollToChart()
+  //}
+//
+  //scrollToChart = () => {
+  //  console.log(chartsRef)
+  //  //chartsRef.current.scrollIntoView({ behavior: "smooth" });
+  //}
+
   handleSubmit = (event) => {
+    this.setState({signal: null, macd: null, loading: true, ticker: event.target[0].value})
     event.preventDefault();
     var ticker = event.target[0].value;
-    fetch(`/ticker/${ticker}`)
-      .then((res) => res.json())
-      .then((data) => {
-        this.setState({
-          data: data,
-          sma: getSMA(data, 5),
-          sma2: getSMA(data, 20),
-          macd: getMACD(data,26,12),
-          signal: getSMA(linetocandle(getMACD(data,26,12)),9)
-        });
-      });
-  };
+    var interval = event.target[1].value;
+    var sDate = event.target[2].value;
+    var eDate = event.target[3].value;
+    var limit = event.target[4].value;
 
-  render() {
+    var params = {
+      sDate: sDate !== "" ? sDate : undefined,
+      eDate: eDate !== "" ? eDate : undefined,
+      interval: interval,
+      limit: limit,
+    };
+
+    var query = queryString.stringify(params);
+
+    fetch(`/ticker/${ticker}${query !== "" ? "?" + query : ""}`)
+    .then(res => res.json())
+    .then(data => {
+      this.setState({
+          data: data,
+          sma: getSMA(data, 20),
+          sma2: getSMA(data, 50),
+          macd: getMACD(data,26,12),
+          signal: getSMA(linetocandle(getMACD(data,26,12)),9),
+          annotations: getCross(),
+          loading: false,
+        })
+    })
+  }
+  
+  render () {
     var options = {
       chart: {
         group: "combine",
         id: "candlestick",
+        redrawOnParentResize: false,
+      },
+      title: {
+        text: this.state.ticker,
+        align: "center",
+        style: {
+          fontSize: '24px',
+        }
+      },
+      annotations: {
+        xaxis: this.state.annotations,
       },
       yaxis: {
+        decimalsInFloat: 2,
         labels: {
           style: {
             colors: ["#000000"],
           },
-          minWidth: 40
+          minWidth: 40,
+          maxWidth: 40,
         },
       },
       tooltip: {
@@ -143,81 +99,103 @@ class Homepage extends React.Component {
         shared: true,
       },
       markers: {
-        size: .5,
+        size: 0.5,
       },
       stroke: {
         width: [1, 5, 5],
       },
     };
 
+    var options2 = {
+      chart: {
+        group: "combine",
+        id: "macd",
+        type: "line",
+        redrawOnParentResize: false,
+      },
+      yaxis: {
+        decimalsInFloat: 2,
+        labels: {
+          style: {
+            colors: ["#000000"],
+          },
+          minWidth: 40,
+          maxWidth: 40
+        },
+      },
+      markers: {
+        size: 0.5,
+      },
+      stroke: {
+        width: [2, 2],
+      },
+      plotOptions: {
+        bar: {
+          colors: {
+            ranges: [
+              {
+                from: -1000,
+                to: 0,
+                color: "#de0408",
+              },
+              {
+                from: 0,
+                to: 1000,
+                color: "#1bfa44",
+              },
+            ],
+          },
+        },
+      },
+      stroke: {
+        width: [2, 2, 0],
+      },
+    };
     return (
       <div className="App-header">
+        <br/>
         <Search onSubmit={this.handleSubmit} />
         <br />
+        {this.state.loading && (
+          <div>
+            <div className="loaders">
+              <Loader size={25} margin={2} color={"red"} />
+              <Loader size={50} margin={2} />
+              <Loader size={25} margin={2} color="white" />
+            </div>
+            Loading...
+          </div>
+        )}
         {this.state.data !== null &&
-          this.state.sma !== null && (
-            <div>
+          this.state.sma !== null &&
+          this.state.macd !== null &&
+          this.state.signal !== null && (
+            <div className="chart-container" ref={chartsRef}>
               <Chart
                 options={options}
                 series={[
                   {
-                    name: "close",
+                    name: "candle",
                     type: "candlestick",
                     data: this.state.data,
                   },
                   {
-                    name: "sma5",
+                    name: "sma20",
                     type: "line",
                     data: this.state.sma,
                   },
                   {
-                    name: "sma20",
+                    name: "sma50",
                     type: "line",
                     data: this.state.sma2,
                   },
                 ]}
                 className="candlestickchart"
                 width="1200px"
-                height="750px"
+                height="700"
               />
-              <br />
               <Chart
-                options={{
-                  chart: {
-                    group: "combine",
-                    id: "macd",
-                    type: "line",
-                  },
-                  yaxis: {
-                    labels: {
-                      minWidth: 40
-                    }
-                  },
-                  markers: {
-                    size: .5,
-                  },
-                  stroke: {
-                    width: [2,2],
-                  },
-                  plotOptions: {
-                    bar: {
-                      colors: {
-                        ranges: [{
-                          from: -1000,
-                          to: 0,
-                          color: '#de0408'
-                        }, {
-                          from: 0,
-                          to: 1000,
-                          color: '#1bfa44'
-                        }]
-                      }
-                    }
-                  },
-                  stroke: {
-                    width: [2,2,0],
-                  }
-                }}
+                options={options2}
                 series={[
                   {
                     name: "macd",
@@ -230,13 +208,13 @@ class Homepage extends React.Component {
                     data: this.state.signal,
                   },
                   {
-                    name:"test",
+                    name: "hist",
                     type: "bar",
-                    data: getHistogram(this.state.macd, this.state.signal)
+                    data: getHistogram(this.state.macd, this.state.signal),
                   },
                 ]}
-                className = "macdchart"
-                height = "300px"
+                className="macdchart"
+                height="200px"
               />
             </div>
           )}

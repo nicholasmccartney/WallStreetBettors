@@ -2,7 +2,100 @@
     color: black;
     background-color: white;
 }
+
+.search {
+    background-color: #1d2025;
+    width: 30%;
+    align-items: center;
+    font-size: 18px;
+    border-radius: 10px;
+    border: black solid 2px;
+}
+
+.search-cont {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ticker {
+    color: black;
+    width: 250px;
+    height: 25px;
+    font-size: 18px;
+    padding: 0px;
+}
+
+.interval {
+    font-size: 18px;
+    margin-left: 2%;
+    height: 25px
+}
+
+.start-date {
+    font-size: 16px;
+    height: 25px;
+    width: 150px;
+    padding: 0px;
+}
+
+.end-date {
+    font-size: 16px;
+    height: 25px;
+    width: 150px;
+    padding: 0px;
+    margin-left: 10px;
+}
+
+.submit {
+    background-color: none;
+    width: 20%;
+    margin-left: 39%;
+    align-content: center;
+    margin-top: 5%;
+}
+
+/*search input and time interval*/
+.top-line {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+}
+
+/*start date and end date*/
+.mid-line {
+    display: flex;
+    flex-direction: row;
+}
+
+.test {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
 .macdchart {
     color: black;
     background-color: white;
+}
+
+.chart-container {
+    height: 1000px;
+}
+
+.loaders {
+    display: flex;
+    flex-direction: row;
+}
+
+.submit {
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-bottom: 10px;
+}
+
+.limit-count {
+    margin-right: 5%;
 }
