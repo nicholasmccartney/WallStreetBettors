@@ -1,5 +1,33 @@
 # EZ-Trade
-### Installation and Running
+
+## Introduction
+Today, people do not know where to get started when it comes to the stock market. They
+are either too afraid, or unsure about how to invest their money. Many people think
+investing in stocks is "gambling" and a sure way to lose out on your hard-earned money.
+Although people do incur losses, the stock market can be a way to gain money as well. EZ-Trade is a web application that will attempt to give its users an introduction on how a stock trading algorithm works.
+
+### Functions
+* User Accounts
+	* Creating an account
+	* Signing into an account
+	* Setting an account logo
+	* Creating a customizable stock watch list
+
+* Get Market Data
+	* Return stock market data when a stock ticker is entered
+
+
+* Customizable Chart Data
+	* Change date and time of historical data returned (ex. 02/05/2020 - 04/05/2020)
+	* Customizable amounts of candlesticks returned (ex. 100, 500)
+	* Change interval of each candlestick (ex. 1 minute, 5 minute)
+
+ * Display Algorithm on chart(s)
+	* Simple Moving Average algorithm
+	* Moving Average Convergence/Divergence algorithm
+	* Display buy/sell signals on stock market graph based on algorithms
+
+### Installation and Setup
 To setup the project environment, make sure you have node installed on your system, then run the follwing commands from the root folder of your installation,  
 
     npm install
@@ -32,6 +60,21 @@ EZ-Trade relies on environment variables that store the API keys for Alpaca and 
     REACT_APP_FIREBASE_MESSAGING_SENDER_ID=FIREBASE_MESSAGING_SENDER_ID
     REACT_APP_FIREBASE_APP_ID=FIREBASE_APP_ID
     REACT_APP_FIREBASE_MEASUREMENT_ID=FIREBASE_MEASUREMENT_ID
-
-
+    
 Alpaca Credentials can be found through your personal Alpaca API account. Firebase Credentials can be aquired from the groups Firebase Project Console.
+
+
+### Demo Video
+
+
+
+
+
+
+### Contributors
+* Nick McCartney (mccartneyn@wit.edu) , Developer
+* Matthew Stepnowski (stepnowskim@wit.edu), Developer
+* Nick Stoltze (stoltzen@wit.edu), Developer
+* Mahdi Alhady (alhadym@wit.edu), Developer
+
+
