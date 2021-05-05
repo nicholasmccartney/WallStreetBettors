@@ -16,9 +16,12 @@ export default class TradingPanel extends React.Component {
 
     makeStrategy = () => {
         fetch(`/strategy`)
-        .then((res) => res.json())
-        .then((data) => {
-            console.log(data)
+        .then(res => {
+          if (res.status === 200) {
+            alert("Strategy Created!")
+          } else {
+            alert("Error Creating Strategy")
+          }
         })
     }
 

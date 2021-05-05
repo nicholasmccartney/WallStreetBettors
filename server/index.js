@@ -39,25 +39,49 @@ const intervals = {
   "1D": 86400000,
 };
 
-function initiateStrategy(ticker, interval, type) {
-  if (type === "crypto") {
-    var params = {
-      symbol: ticker,
-      interval: interval,
-      limit: 1000
-    };
-    var query = querystring.stringify(params);
-    binance.get(`/klines${query !== "" ? "?" + query : ""}`)
-    .then(data => {
-      strategies.push(
-        setInterval(SMA2050Stragey, 1000, ticker, interval, type)
-      )
-    })
-    .catch(e => console.log(e));
+class Strategy {
+  constructor(ticker, interval, type) {
+    this.ticker = ticker;
+    this.interval = interval;
+    this.type = type;
+    this.strat = this.initiate(ticker, interval, type)
+    this.data = [];
+  }
+
+  get data() {
+    return this._data
+  }
+
+  set data(data) {
+    if (data.length == 1) {
+      this._data = this._data.concat(data)
+    } else {
+      this._data = data;
+    }
+  }
+
+  initiate(ticker, interval, type){
+    if (type === "crypto") {
+      var params = {
+        symbol: ticker,
+        interval: interval,
+        limit: 10,
+      };
+      var query = querystring.stringify(params);
+      binance
+        .get(`/klines${query !== "" ? "?" + query : ""}`)
+        .then(res => {
+          var data = res.data;
+          console.log("strategy created")
+          this.data = data
+          return setInterval(SMA2050Stragey, 60000, ticker, interval, type, this)
+        })
+        .catch((e) => console.log(e));
+    }
   }
 }
 
-function SMA2050Stragey(ticker, interval, type) {
+function SMA2050Stragey(ticker, interval, type, strat) {
   if (type==="crypto"){
     var params = {
       symbol: ticker,
@@ -66,11 +90,12 @@ function SMA2050Stragey(ticker, interval, type) {
     };
     var query = querystring.stringify(params);
     binance.get(`/klines${query !== "" ? "?" + query : ""}`)
-    .then(data => {
-      console.log(data['data'])
+    .then(res => {
+      console.log("stratsetdata");
+      var data = res.data
+      strat.data = data
     });
   }
-
 }
 
 app.use(cors());
@@ -220,7 +245,16 @@ app.get("/tickerDevV2/:id", (req, res) => {
 })
 
 app.get("/strategy", (req, res) => {
-  initiateStrategy("DOGEUSD", "5m", "crypto");
+  try {
+    strategies.push(new Strategy("DOGEUSD","1m","crypto"))
+    return res.status(200)
+  } catch (e) {
+    return res.status(500).send(`Error: ${e}`)
+  }
+})
+
+app.get("/strategies", (req,res)=>{
+  return strategies
 })
 
 app.listen(3001, () => {
