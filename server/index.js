@@ -39,65 +39,6 @@ const intervals = {
   "1D": 86400000,
 };
 
-class Strategy {
-  constructor(ticker, interval, type) {
-    this.ticker = ticker;
-    this.interval = interval;
-    this.type = type;
-    this.strat = this.initiate(ticker, interval, type)
-    this.data = [];
-  }
-
-  get data() {
-    return this._data
-  }
-
-  set data(data) {
-    if (data.length == 1) {
-      this._data = this._data.concat(data)
-    } else {
-      this._data = data;
-    }
-  }
-
-  initiate(ticker, interval, type){
-    if (type === "crypto") {
-      var params = {
-        symbol: ticker,
-        interval: interval,
-        limit: 10,
-      };
-      var query = querystring.stringify(params);
-      binance
-        .get(`/klines${query !== "" ? "?" + query : ""}`)
-        .then(res => {
-          var data = res.data;
-          console.log("strategy created")
-          this.data = data
-          return setInterval(SMA2050Stragey, 60000, ticker, interval, type, this)
-        })
-        .catch((e) => console.log(e));
-    }
-  }
-}
-
-function SMA2050Stragey(ticker, interval, type, strat) {
-  if (type==="crypto"){
-    var params = {
-      symbol: ticker,
-      interval: interval,
-      limit: 1,
-    };
-    var query = querystring.stringify(params);
-    binance.get(`/klines${query !== "" ? "?" + query : ""}`)
-    .then(res => {
-      console.log("stratsetdata");
-      var data = res.data
-      strat.data = data
-    });
-  }
-}
-
 app.use(cors());
 
 app.get("/ticker/:id", (req, res) => {

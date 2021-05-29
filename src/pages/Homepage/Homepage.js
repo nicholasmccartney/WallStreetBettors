@@ -44,6 +44,7 @@ class Homepage extends React.Component {
     var limit = event.target[4].value;
 
     var params = {
+      id: ticker,
       sDate: sDate !== "" ? sDate : undefined,
       eDate: eDate !== "" ? eDate : undefined,
       interval: interval,
@@ -52,7 +53,7 @@ class Homepage extends React.Component {
 
     var query = queryString.stringify(params);
 
-    fetch(`/ticker/${ticker}${query !== "" ? "?" + query : ""}`)
+    fetch(`/ticker${query !== "" ? "?" + query : ""}`)
     .then(res => res.json())
     .then(data => {
       console.log(data)
